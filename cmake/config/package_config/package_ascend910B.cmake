@@ -133,10 +133,12 @@ set(HOST_DELIVERY_FILES
     ${host_delivery_prefix}/drv_vascend.ko
     ${host_delivery_prefix}/asdrv_vpc.ko
     ${host_delivery_prefix}/ts_agent.ko
+    ${host_delivery_prefix}/drv_dvpp_cmdlist.ko
     ${host_delivery_prefix}/asdrv_vvpc.ko
     ${host_delivery_prefix}/drv_virtmng_host_stub.ko
     ${host_delivery_prefix}/asdrv_vtrs.ko
     ${host_delivery_prefix}/ts_agent_vm.ko
+    ${host_delivery_prefix}/vdrv_dvpp_cmdlist.ko
 )
 install(FILES ${HOST_DELIVERY_FILES}
     DESTINATION driver/host

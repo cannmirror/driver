@@ -90,7 +90,6 @@ target_compile_definitions(dms_obj PRIVATE
     # power
 
     # qos
-    CFG_FEATURE_GET_QOS_MASTER_CFG
 
     # sils
 

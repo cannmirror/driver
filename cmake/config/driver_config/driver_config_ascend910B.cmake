@@ -35,6 +35,8 @@ set(DRIVER_TARGETS
     drv_vascend
     ts_agent
     ts_agent_vm
+    drv_dvpp_cmdlist
+    vdrv_dvpp_cmdlist
 
     # user
     ascend_hal

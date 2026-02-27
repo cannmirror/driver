@@ -213,6 +213,13 @@ changeDavinciMode() {
     servers_start_ret=2
 }
 
+changeDvppCmdlistMode() {
+    add_log "change dvpp_cmdlist mode begin."
+    chmod -f 660 /dev/dvpp_cmdlist
+    chown -f ${username}:${usergroup} /dev/dvpp_cmdlist
+    add_log "change dvpp_cmdlist mode end."
+}
+
 clean_servers_log() {
     echo >$log_name
 }
@@ -268,6 +275,7 @@ init_signature_configuration() {
 
 servers_start() {
     clean_servers_log
+    changeDvppCmdlistMode
     if [ -d "$targetdir"/driver/tools ];then
         changeDavinciMode
 

@@ -1,0 +1,353 @@
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2026. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ */
+#ifndef __JPGD_CFG_REG_OFFSET_H__
+#define __JPGD_CFG_REG_OFFSET_H__
+
+/* JPGD_CFG Base addr of Module's Register */
+#define SOC_JPGD_CFG_BASE                       (0xa000)
+
+/******************************************************************************/
+/*                      SOC JPGD_CFG Registers' Definitions                            */
+/******************************************************************************/
+
+#define SOC_JPGD_CFG_JPEG_DEC_START_REG       (SOC_JPGD_CFG_BASE + 0x0)   /* DECODE START */
+#define SOC_JPGD_CFG_PREFTCH_CTRL_REG         (SOC_JPGD_CFG_BASE + 0x4)   /* PREFETCH CONTROL */
+#define SOC_JPGD_CFG_ACCURACY_SEL_REG         (SOC_JPGD_CFG_BASE + 0x8)   /* ACCURACY_SEL */
+#define SOC_JPGD_CFG_FRAME_SIZE_REG           (SOC_JPGD_CFG_BASE + 0x10)  /* FRAME SIZE */
+#define SOC_JPGD_CFG_CROP_HORIZONTAL_REG      (SOC_JPGD_CFG_BASE + 0x14)  /* HORIZONTAL CROP POSITION */
+#define SOC_JPGD_CFG_CROP_VERTICAL_REG        (SOC_JPGD_CFG_BASE + 0x18)  /* VRITICAL CROP POSITION */
+#define SOC_JPGD_CFG_BITSTREAMS_START_H_REG   (SOC_JPGD_CFG_BASE + 0x20)  /* BITSTREAM START ADDR 33_32 */
+#define SOC_JPGD_CFG_BITSTREAMS_START_L_REG   (SOC_JPGD_CFG_BASE + 0x24)  /* BITSTREAM START ADDR 31_0 */
+#define SOC_JPGD_CFG_BITSTREAMS_END_H_REG     (SOC_JPGD_CFG_BASE + 0x28)  /* BITSTREAM END ADDR 33_32 */
+#define SOC_JPGD_CFG_BITSTREAMS_END_L_REG     (SOC_JPGD_CFG_BASE + 0x2C)  /* BITSTREAM END ADDR 31_0 */
+#define SOC_JPGD_CFG_LAST_PAGE_Y_REG          (SOC_JPGD_CFG_BASE + 0x34)  /* LAST_PAGE FOR PLANAR Y */
+#define SOC_JPGD_CFG_LAST_PAGE_C_REG          (SOC_JPGD_CFG_BASE + 0x3C)  /* LAST_PAGE FOR PLANAR UV */
+#define SOC_JPGD_CFG_LBUF_START_ADDR_L_REG    (SOC_JPGD_CFG_BASE + 0x40)  /* START ADDR FOR LINEBUFF LOW */
+#define SOC_JPGD_CFG_LBUF_START_ADDR_H_REG    (SOC_JPGD_CFG_BASE + 0x44)  /* START ADDR FOR LINEBUFF HIGH */
+#define SOC_JPGD_CFG_FRAME_STRIDE_REG         (SOC_JPGD_CFG_BASE + 0x48)  /* FRAME STRIDE */
+#define SOC_JPGD_CFG_OUTPUT_TYPE_REG          (SOC_JPGD_CFG_BASE + 0x50)  /* OUTPUT TYPE */
+#define SOC_JPGD_CFG_FREQ_SCALE_REG           (SOC_JPGD_CFG_BASE + 0x54)  /* FREQUENCE SCALE */
+#define SOC_JPGD_CFG_MIDDLE_FILTER_REG        (SOC_JPGD_CFG_BASE + 0x58)  /* MIDDLE FILTER */
+#define SOC_JPGD_CFG_SAMPLING_FACTOR_REG      (SOC_JPGD_CFG_BASE + 0x5C)  /* SAMPLING FACTOR */
+#define SOC_JPGD_CFG_DRI_REG                  (SOC_JPGD_CFG_BASE + 0x60)  /* DEFINE RESET INTERVAL */
+#define SOC_JPGD_CFG_FRAME_START_Y_H_REG      (SOC_JPGD_CFG_BASE + 0x64)  /* START ADDR FOR PLANAR Y_H */
+#define SOC_JPGD_CFG_FRAME_START_Y_L_REG      (SOC_JPGD_CFG_BASE + 0x68)  /* START ADDR FOR PLANAR Y_L */
+#define SOC_JPGD_CFG_OVER_TIME_THD_REG        (SOC_JPGD_CFG_BASE + 0x70)  /* OVER TIME THESHOLD */
+#define SOC_JPGD_CFG_FRAME_START_C_H_REG      (SOC_JPGD_CFG_BASE + 0x74)  /* START ADDR FOR PLANAR UV_H */
+#define SOC_JPGD_CFG_FRAME_START_C_L_REG      (SOC_JPGD_CFG_BASE + 0x78)  /* START ADDR FOR PLANAR UV_L */
+#define SOC_JPGD_CFG_HOR_PHASE0_COEF01_REG    (SOC_JPGD_CFG_BASE + 0x80)  /* HORIZONTAL OVER SAMPLING COEFFICIENT 0/1 PHASE 0 */
+#define SOC_JPGD_CFG_HOR_PHASE0_COEF23_REG    (SOC_JPGD_CFG_BASE + 0x84)  /* HORIZONTAL OVER SAMPLING COEFFICIENT 2/3 PHASE 0 */
+#define SOC_JPGD_CFG_HOR_PHASE0_COEF45_REG    (SOC_JPGD_CFG_BASE + 0x88)  /* HORIZONTAL OVER SAMPLING COEFFICIENT 4/5 PHASE 0 */
+#define SOC_JPGD_CFG_HOR_PHASE0_COEF67_REG    (SOC_JPGD_CFG_BASE + 0x8C)  /* HORIZONTAL OVER SAMPLING COEFFICIENT 6/7 PHASE 0 */
+#define SOC_JPGD_CFG_HOR_PHASE2_COEF01_REG    (SOC_JPGD_CFG_BASE + 0x90)  /* HORIZONTAL OVER SAMPLING COEFFICIENT 0/1 PHASE 2 */
+#define SOC_JPGD_CFG_HOR_PHASE2_COEF23_REG    (SOC_JPGD_CFG_BASE + 0x94)  /* HORIZONTAL OVER SAMPLING COEFFICIENT 2/3 PHASE 2 */
+#define SOC_JPGD_CFG_HOR_PHASE2_COEF45_REG    (SOC_JPGD_CFG_BASE + 0x98)  /* HORIZONTAL OVER SAMPLING COEFFICIENT 4/5 PHASE 2 */
+#define SOC_JPGD_CFG_HOR_PHASE2_COEF67_REG    (SOC_JPGD_CFG_BASE + 0x9C)  /* HORIZONTAL OVER SAMPLING COEFFICIENT 6/7 PHASE 2 */
+#define SOC_JPGD_CFG_VER_PHASE0_COEF01_REG    (SOC_JPGD_CFG_BASE + 0xA0)  /* VERTICAL OVER SAMPLING COEFFICIENT 0/1 PHASE 0 */
+#define SOC_JPGD_CFG_VER_PHASE0_COEF23_REG    (SOC_JPGD_CFG_BASE + 0xA4)  /* VERTICAL OVER SAMPLING COEFFICIENT 2/3 PHASE 0 */
+#define SOC_JPGD_CFG_VER_PHASE2_COEF01_REG    (SOC_JPGD_CFG_BASE + 0xA8)  /* VERTICAL OVER SAMPLING COEFFICIENT 0/1 PHASE 2 */
+#define SOC_JPGD_CFG_VER_PHASE2_COEF23_REG    (SOC_JPGD_CFG_BASE + 0xAC)  /* VERTICAL OVER SAMPLING COEFFICIENT 2/3 PHASE 2 */
+#define SOC_JPGD_CFG_CSC_IN_DC_COEF_REG       (SOC_JPGD_CFG_BASE + 0xB0)  /* DC COEFFICIENT FOR CSC INPUT */
+#define SOC_JPGD_CFG_CSC_OUT_DC_COEF_REG      (SOC_JPGD_CFG_BASE + 0xB4)  /* DC COEFFICIENT FOR CSC OUTPUT */
+#define SOC_JPGD_CFG_CSC_TRANS_COEF0_REG      (SOC_JPGD_CFG_BASE + 0xB8)  /* CSC CONVERSIONG COEFFICIENT 0 */
+#define SOC_JPGD_CFG_CSC_TRANS_COEF1_REG      (SOC_JPGD_CFG_BASE + 0xBC)  /* CSC CONVERSIONG COEFFICIENT 1 */
+#define SOC_JPGD_CFG_CSC_TRANS_COEF2_REG      (SOC_JPGD_CFG_BASE + 0xC0)  /* CSC CONVERSIONG COEFFICIENT 2 */
+#define SOC_JPGD_CFG_CSC_TRANS_COEF3_REG      (SOC_JPGD_CFG_BASE + 0xC4)  /* CSC CONVERSIONG COEFFICIENT 3 */
+#define SOC_JPGD_CFG_CSC_TRANS_COEF4_REG      (SOC_JPGD_CFG_BASE + 0xC8)  /* CSC CONVERSIONG COEFFICIENT 4 */
+#define SOC_JPGD_CFG_QUANT_TABLE_0_REG        (SOC_JPGD_CFG_BASE + 0x200) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_1_REG        (SOC_JPGD_CFG_BASE + 0x204) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_2_REG        (SOC_JPGD_CFG_BASE + 0x208) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_3_REG        (SOC_JPGD_CFG_BASE + 0x20C) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_4_REG        (SOC_JPGD_CFG_BASE + 0x210) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_5_REG        (SOC_JPGD_CFG_BASE + 0x214) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_6_REG        (SOC_JPGD_CFG_BASE + 0x218) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_7_REG        (SOC_JPGD_CFG_BASE + 0x21C) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_8_REG        (SOC_JPGD_CFG_BASE + 0x220) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_9_REG        (SOC_JPGD_CFG_BASE + 0x224) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_10_REG       (SOC_JPGD_CFG_BASE + 0x228) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_11_REG       (SOC_JPGD_CFG_BASE + 0x22C) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_12_REG       (SOC_JPGD_CFG_BASE + 0x230) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_13_REG       (SOC_JPGD_CFG_BASE + 0x234) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_14_REG       (SOC_JPGD_CFG_BASE + 0x238) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_15_REG       (SOC_JPGD_CFG_BASE + 0x23C) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_16_REG       (SOC_JPGD_CFG_BASE + 0x240) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_17_REG       (SOC_JPGD_CFG_BASE + 0x244) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_18_REG       (SOC_JPGD_CFG_BASE + 0x248) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_19_REG       (SOC_JPGD_CFG_BASE + 0x24C) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_20_REG       (SOC_JPGD_CFG_BASE + 0x250) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_21_REG       (SOC_JPGD_CFG_BASE + 0x254) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_22_REG       (SOC_JPGD_CFG_BASE + 0x258) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_23_REG       (SOC_JPGD_CFG_BASE + 0x25C) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_24_REG       (SOC_JPGD_CFG_BASE + 0x260) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_25_REG       (SOC_JPGD_CFG_BASE + 0x264) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_26_REG       (SOC_JPGD_CFG_BASE + 0x268) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_27_REG       (SOC_JPGD_CFG_BASE + 0x26C) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_28_REG       (SOC_JPGD_CFG_BASE + 0x270) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_29_REG       (SOC_JPGD_CFG_BASE + 0x274) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_30_REG       (SOC_JPGD_CFG_BASE + 0x278) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_31_REG       (SOC_JPGD_CFG_BASE + 0x27C) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_32_REG       (SOC_JPGD_CFG_BASE + 0x280) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_33_REG       (SOC_JPGD_CFG_BASE + 0x284) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_34_REG       (SOC_JPGD_CFG_BASE + 0x288) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_35_REG       (SOC_JPGD_CFG_BASE + 0x28C) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_36_REG       (SOC_JPGD_CFG_BASE + 0x290) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_37_REG       (SOC_JPGD_CFG_BASE + 0x294) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_38_REG       (SOC_JPGD_CFG_BASE + 0x298) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_39_REG       (SOC_JPGD_CFG_BASE + 0x29C) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_40_REG       (SOC_JPGD_CFG_BASE + 0x2A0) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_41_REG       (SOC_JPGD_CFG_BASE + 0x2A4) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_42_REG       (SOC_JPGD_CFG_BASE + 0x2A8) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_43_REG       (SOC_JPGD_CFG_BASE + 0x2AC) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_44_REG       (SOC_JPGD_CFG_BASE + 0x2B0) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_45_REG       (SOC_JPGD_CFG_BASE + 0x2B4) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_46_REG       (SOC_JPGD_CFG_BASE + 0x2B8) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_47_REG       (SOC_JPGD_CFG_BASE + 0x2BC) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_48_REG       (SOC_JPGD_CFG_BASE + 0x2C0) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_49_REG       (SOC_JPGD_CFG_BASE + 0x2C4) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_50_REG       (SOC_JPGD_CFG_BASE + 0x2C8) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_51_REG       (SOC_JPGD_CFG_BASE + 0x2CC) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_52_REG       (SOC_JPGD_CFG_BASE + 0x2D0) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_53_REG       (SOC_JPGD_CFG_BASE + 0x2D4) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_54_REG       (SOC_JPGD_CFG_BASE + 0x2D8) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_55_REG       (SOC_JPGD_CFG_BASE + 0x2DC) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_56_REG       (SOC_JPGD_CFG_BASE + 0x2E0) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_57_REG       (SOC_JPGD_CFG_BASE + 0x2E4) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_58_REG       (SOC_JPGD_CFG_BASE + 0x2E8) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_59_REG       (SOC_JPGD_CFG_BASE + 0x2EC) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_60_REG       (SOC_JPGD_CFG_BASE + 0x2F0) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_61_REG       (SOC_JPGD_CFG_BASE + 0x2F4) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_62_REG       (SOC_JPGD_CFG_BASE + 0x2F8) /* QUANT TABLE */
+#define SOC_JPGD_CFG_QUANT_TABLE_63_REG       (SOC_JPGD_CFG_BASE + 0x2FC) /* QUANT TABLE */
+#define SOC_JPGD_CFG_HDC_TABLE_0_REG          (SOC_JPGD_CFG_BASE + 0x300) /* HUFFMAN DC TABLE */
+#define SOC_JPGD_CFG_HDC_TABLE_1_REG          (SOC_JPGD_CFG_BASE + 0x304) /* HUFFMAN DC TABLE */
+#define SOC_JPGD_CFG_HDC_TABLE_2_REG          (SOC_JPGD_CFG_BASE + 0x308) /* HUFFMAN DC TABLE */
+#define SOC_JPGD_CFG_HDC_TABLE_3_REG          (SOC_JPGD_CFG_BASE + 0x30C) /* HUFFMAN DC TABLE */
+#define SOC_JPGD_CFG_HDC_TABLE_4_REG          (SOC_JPGD_CFG_BASE + 0x310) /* HUFFMAN DC TABLE */
+#define SOC_JPGD_CFG_HDC_TABLE_5_REG          (SOC_JPGD_CFG_BASE + 0x314) /* HUFFMAN DC TABLE */
+#define SOC_JPGD_CFG_HDC_TABLE_6_REG          (SOC_JPGD_CFG_BASE + 0x318) /* HUFFMAN DC TABLE */
+#define SOC_JPGD_CFG_HDC_TABLE_7_REG          (SOC_JPGD_CFG_BASE + 0x31C) /* HUFFMAN DC TABLE */
+#define SOC_JPGD_CFG_HDC_TABLE_8_REG          (SOC_JPGD_CFG_BASE + 0x320) /* HUFFMAN DC TABLE */
+#define SOC_JPGD_CFG_HDC_TABLE_9_REG          (SOC_JPGD_CFG_BASE + 0x324) /* HUFFMAN DC TABLE */
+#define SOC_JPGD_CFG_HDC_TABLE_10_REG         (SOC_JPGD_CFG_BASE + 0x328) /* HUFFMAN DC TABLE */
+#define SOC_JPGD_CFG_HDC_TABLE_11_REG         (SOC_JPGD_CFG_BASE + 0x32C) /* HUFFMAN DC TABLE */
+#define SOC_JPGD_CFG_HAC_MIN_TABLE_0_REG      (SOC_JPGD_CFG_BASE + 0x340) /* Huffman AC mincode memory */
+#define SOC_JPGD_CFG_HAC_MIN_TABLE_1_REG      (SOC_JPGD_CFG_BASE + 0x344) /* Huffman AC mincode memory */
+#define SOC_JPGD_CFG_HAC_MIN_TABLE_2_REG      (SOC_JPGD_CFG_BASE + 0x348) /* Huffman AC mincode memory */
+#define SOC_JPGD_CFG_HAC_MIN_TABLE_3_REG      (SOC_JPGD_CFG_BASE + 0x34C) /* Huffman AC mincode memory */
+#define SOC_JPGD_CFG_HAC_MIN_TABLE_4_REG      (SOC_JPGD_CFG_BASE + 0x350) /* Huffman AC mincode memory */
+#define SOC_JPGD_CFG_HAC_MIN_TABLE_5_REG      (SOC_JPGD_CFG_BASE + 0x354) /* Huffman AC mincode memory */
+#define SOC_JPGD_CFG_HAC_MIN_TABLE_6_REG      (SOC_JPGD_CFG_BASE + 0x358) /* Huffman AC mincode memory */
+#define SOC_JPGD_CFG_HAC_MIN_TABLE_7_REG      (SOC_JPGD_CFG_BASE + 0x35C) /* Huffman AC mincode memory */
+#define SOC_JPGD_CFG_HAC_BASE_TABLE_0_REG     (SOC_JPGD_CFG_BASE + 0x380) /* Huffman AC base memory */
+#define SOC_JPGD_CFG_HAC_BASE_TABLE_1_REG     (SOC_JPGD_CFG_BASE + 0x384) /* Huffman AC base memory */
+#define SOC_JPGD_CFG_HAC_BASE_TABLE_2_REG     (SOC_JPGD_CFG_BASE + 0x388) /* Huffman AC base memory */
+#define SOC_JPGD_CFG_HAC_BASE_TABLE_3_REG     (SOC_JPGD_CFG_BASE + 0x38C) /* Huffman AC base memory */
+#define SOC_JPGD_CFG_HAC_BASE_TABLE_4_REG     (SOC_JPGD_CFG_BASE + 0x390) /* Huffman AC base memory */
+#define SOC_JPGD_CFG_HAC_BASE_TABLE_5_REG     (SOC_JPGD_CFG_BASE + 0x394) /* Huffman AC base memory */
+#define SOC_JPGD_CFG_HAC_BASE_TABLE_6_REG     (SOC_JPGD_CFG_BASE + 0x398) /* Huffman AC base memory */
+#define SOC_JPGD_CFG_HAC_BASE_TABLE_7_REG     (SOC_JPGD_CFG_BASE + 0x39C) /* Huffman AC base memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_0_REG   (SOC_JPGD_CFG_BASE + 0x400) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_1_REG   (SOC_JPGD_CFG_BASE + 0x404) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_2_REG   (SOC_JPGD_CFG_BASE + 0x408) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_3_REG   (SOC_JPGD_CFG_BASE + 0x40C) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_4_REG   (SOC_JPGD_CFG_BASE + 0x410) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_5_REG   (SOC_JPGD_CFG_BASE + 0x414) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_6_REG   (SOC_JPGD_CFG_BASE + 0x418) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_7_REG   (SOC_JPGD_CFG_BASE + 0x41C) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_8_REG   (SOC_JPGD_CFG_BASE + 0x420) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_9_REG   (SOC_JPGD_CFG_BASE + 0x424) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_10_REG  (SOC_JPGD_CFG_BASE + 0x428) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_11_REG  (SOC_JPGD_CFG_BASE + 0x42C) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_12_REG  (SOC_JPGD_CFG_BASE + 0x430) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_13_REG  (SOC_JPGD_CFG_BASE + 0x434) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_14_REG  (SOC_JPGD_CFG_BASE + 0x438) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_15_REG  (SOC_JPGD_CFG_BASE + 0x43C) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_16_REG  (SOC_JPGD_CFG_BASE + 0x440) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_17_REG  (SOC_JPGD_CFG_BASE + 0x444) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_18_REG  (SOC_JPGD_CFG_BASE + 0x448) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_19_REG  (SOC_JPGD_CFG_BASE + 0x44C) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_20_REG  (SOC_JPGD_CFG_BASE + 0x450) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_21_REG  (SOC_JPGD_CFG_BASE + 0x454) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_22_REG  (SOC_JPGD_CFG_BASE + 0x458) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_23_REG  (SOC_JPGD_CFG_BASE + 0x45C) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_24_REG  (SOC_JPGD_CFG_BASE + 0x460) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_25_REG  (SOC_JPGD_CFG_BASE + 0x464) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_26_REG  (SOC_JPGD_CFG_BASE + 0x468) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_27_REG  (SOC_JPGD_CFG_BASE + 0x46C) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_28_REG  (SOC_JPGD_CFG_BASE + 0x470) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_29_REG  (SOC_JPGD_CFG_BASE + 0x474) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_30_REG  (SOC_JPGD_CFG_BASE + 0x478) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_31_REG  (SOC_JPGD_CFG_BASE + 0x47C) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_32_REG  (SOC_JPGD_CFG_BASE + 0x480) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_33_REG  (SOC_JPGD_CFG_BASE + 0x484) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_34_REG  (SOC_JPGD_CFG_BASE + 0x488) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_35_REG  (SOC_JPGD_CFG_BASE + 0x48C) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_36_REG  (SOC_JPGD_CFG_BASE + 0x490) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_37_REG  (SOC_JPGD_CFG_BASE + 0x494) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_38_REG  (SOC_JPGD_CFG_BASE + 0x498) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_39_REG  (SOC_JPGD_CFG_BASE + 0x49C) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_40_REG  (SOC_JPGD_CFG_BASE + 0x4A0) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_41_REG  (SOC_JPGD_CFG_BASE + 0x4A4) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_42_REG  (SOC_JPGD_CFG_BASE + 0x4A8) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_43_REG  (SOC_JPGD_CFG_BASE + 0x4AC) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_44_REG  (SOC_JPGD_CFG_BASE + 0x4B0) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_45_REG  (SOC_JPGD_CFG_BASE + 0x4B4) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_46_REG  (SOC_JPGD_CFG_BASE + 0x4B8) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_47_REG  (SOC_JPGD_CFG_BASE + 0x4BC) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_48_REG  (SOC_JPGD_CFG_BASE + 0x4C0) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_49_REG  (SOC_JPGD_CFG_BASE + 0x4C4) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_50_REG  (SOC_JPGD_CFG_BASE + 0x4C8) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_51_REG  (SOC_JPGD_CFG_BASE + 0x4CC) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_52_REG  (SOC_JPGD_CFG_BASE + 0x4D0) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_53_REG  (SOC_JPGD_CFG_BASE + 0x4D4) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_54_REG  (SOC_JPGD_CFG_BASE + 0x4D8) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_55_REG  (SOC_JPGD_CFG_BASE + 0x4DC) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_56_REG  (SOC_JPGD_CFG_BASE + 0x4E0) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_57_REG  (SOC_JPGD_CFG_BASE + 0x4E4) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_58_REG  (SOC_JPGD_CFG_BASE + 0x4E8) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_59_REG  (SOC_JPGD_CFG_BASE + 0x4EC) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_60_REG  (SOC_JPGD_CFG_BASE + 0x4F0) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_61_REG  (SOC_JPGD_CFG_BASE + 0x4F4) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_62_REG  (SOC_JPGD_CFG_BASE + 0x4F8) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_63_REG  (SOC_JPGD_CFG_BASE + 0x4FC) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_64_REG  (SOC_JPGD_CFG_BASE + 0x500) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_65_REG  (SOC_JPGD_CFG_BASE + 0x504) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_66_REG  (SOC_JPGD_CFG_BASE + 0x508) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_67_REG  (SOC_JPGD_CFG_BASE + 0x50C) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_68_REG  (SOC_JPGD_CFG_BASE + 0x510) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_69_REG  (SOC_JPGD_CFG_BASE + 0x514) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_70_REG  (SOC_JPGD_CFG_BASE + 0x518) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_71_REG  (SOC_JPGD_CFG_BASE + 0x51C) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_72_REG  (SOC_JPGD_CFG_BASE + 0x520) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_73_REG  (SOC_JPGD_CFG_BASE + 0x524) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_74_REG  (SOC_JPGD_CFG_BASE + 0x528) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_75_REG  (SOC_JPGD_CFG_BASE + 0x52C) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_76_REG  (SOC_JPGD_CFG_BASE + 0x530) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_77_REG  (SOC_JPGD_CFG_BASE + 0x534) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_78_REG  (SOC_JPGD_CFG_BASE + 0x538) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_79_REG  (SOC_JPGD_CFG_BASE + 0x53C) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_80_REG  (SOC_JPGD_CFG_BASE + 0x540) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_81_REG  (SOC_JPGD_CFG_BASE + 0x544) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_82_REG  (SOC_JPGD_CFG_BASE + 0x548) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_83_REG  (SOC_JPGD_CFG_BASE + 0x54C) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_84_REG  (SOC_JPGD_CFG_BASE + 0x550) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_85_REG  (SOC_JPGD_CFG_BASE + 0x554) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_86_REG  (SOC_JPGD_CFG_BASE + 0x558) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_87_REG  (SOC_JPGD_CFG_BASE + 0x55C) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_88_REG  (SOC_JPGD_CFG_BASE + 0x560) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_89_REG  (SOC_JPGD_CFG_BASE + 0x564) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_90_REG  (SOC_JPGD_CFG_BASE + 0x568) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_91_REG  (SOC_JPGD_CFG_BASE + 0x56C) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_92_REG  (SOC_JPGD_CFG_BASE + 0x570) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_93_REG  (SOC_JPGD_CFG_BASE + 0x574) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_94_REG  (SOC_JPGD_CFG_BASE + 0x578) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_95_REG  (SOC_JPGD_CFG_BASE + 0x57C) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_96_REG  (SOC_JPGD_CFG_BASE + 0x580) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_97_REG  (SOC_JPGD_CFG_BASE + 0x584) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_98_REG  (SOC_JPGD_CFG_BASE + 0x588) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_99_REG  (SOC_JPGD_CFG_BASE + 0x58C) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_100_REG (SOC_JPGD_CFG_BASE + 0x590) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_101_REG (SOC_JPGD_CFG_BASE + 0x594) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_102_REG (SOC_JPGD_CFG_BASE + 0x598) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_103_REG (SOC_JPGD_CFG_BASE + 0x59C) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_104_REG (SOC_JPGD_CFG_BASE + 0x5A0) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_105_REG (SOC_JPGD_CFG_BASE + 0x5A4) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_106_REG (SOC_JPGD_CFG_BASE + 0x5A8) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_107_REG (SOC_JPGD_CFG_BASE + 0x5AC) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_108_REG (SOC_JPGD_CFG_BASE + 0x5B0) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_109_REG (SOC_JPGD_CFG_BASE + 0x5B4) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_110_REG (SOC_JPGD_CFG_BASE + 0x5B8) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_111_REG (SOC_JPGD_CFG_BASE + 0x5BC) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_112_REG (SOC_JPGD_CFG_BASE + 0x5C0) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_113_REG (SOC_JPGD_CFG_BASE + 0x5C4) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_114_REG (SOC_JPGD_CFG_BASE + 0x5C8) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_115_REG (SOC_JPGD_CFG_BASE + 0x5CC) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_116_REG (SOC_JPGD_CFG_BASE + 0x5D0) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_117_REG (SOC_JPGD_CFG_BASE + 0x5D4) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_118_REG (SOC_JPGD_CFG_BASE + 0x5D8) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_119_REG (SOC_JPGD_CFG_BASE + 0x5DC) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_120_REG (SOC_JPGD_CFG_BASE + 0x5E0) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_121_REG (SOC_JPGD_CFG_BASE + 0x5E4) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_122_REG (SOC_JPGD_CFG_BASE + 0x5E8) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_123_REG (SOC_JPGD_CFG_BASE + 0x5EC) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_124_REG (SOC_JPGD_CFG_BASE + 0x5F0) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_125_REG (SOC_JPGD_CFG_BASE + 0x5F4) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_126_REG (SOC_JPGD_CFG_BASE + 0x5F8) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_127_REG (SOC_JPGD_CFG_BASE + 0x5FC) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_128_REG (SOC_JPGD_CFG_BASE + 0x600) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_129_REG (SOC_JPGD_CFG_BASE + 0x604) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_130_REG (SOC_JPGD_CFG_BASE + 0x608) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_131_REG (SOC_JPGD_CFG_BASE + 0x60C) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_132_REG (SOC_JPGD_CFG_BASE + 0x610) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_133_REG (SOC_JPGD_CFG_BASE + 0x614) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_134_REG (SOC_JPGD_CFG_BASE + 0x618) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_135_REG (SOC_JPGD_CFG_BASE + 0x61C) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_136_REG (SOC_JPGD_CFG_BASE + 0x620) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_137_REG (SOC_JPGD_CFG_BASE + 0x624) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_138_REG (SOC_JPGD_CFG_BASE + 0x628) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_139_REG (SOC_JPGD_CFG_BASE + 0x62C) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_140_REG (SOC_JPGD_CFG_BASE + 0x630) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_141_REG (SOC_JPGD_CFG_BASE + 0x634) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_142_REG (SOC_JPGD_CFG_BASE + 0x638) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_143_REG (SOC_JPGD_CFG_BASE + 0x63C) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_144_REG (SOC_JPGD_CFG_BASE + 0x640) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_145_REG (SOC_JPGD_CFG_BASE + 0x644) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_146_REG (SOC_JPGD_CFG_BASE + 0x648) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_147_REG (SOC_JPGD_CFG_BASE + 0x64C) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_148_REG (SOC_JPGD_CFG_BASE + 0x650) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_149_REG (SOC_JPGD_CFG_BASE + 0x654) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_150_REG (SOC_JPGD_CFG_BASE + 0x658) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_151_REG (SOC_JPGD_CFG_BASE + 0x65C) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_152_REG (SOC_JPGD_CFG_BASE + 0x660) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_153_REG (SOC_JPGD_CFG_BASE + 0x664) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_154_REG (SOC_JPGD_CFG_BASE + 0x668) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_155_REG (SOC_JPGD_CFG_BASE + 0x66C) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_156_REG (SOC_JPGD_CFG_BASE + 0x670) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_157_REG (SOC_JPGD_CFG_BASE + 0x674) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_158_REG (SOC_JPGD_CFG_BASE + 0x678) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_159_REG (SOC_JPGD_CFG_BASE + 0x67C) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_160_REG (SOC_JPGD_CFG_BASE + 0x680) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_161_REG (SOC_JPGD_CFG_BASE + 0x684) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_162_REG (SOC_JPGD_CFG_BASE + 0x688) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_163_REG (SOC_JPGD_CFG_BASE + 0x68C) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_164_REG (SOC_JPGD_CFG_BASE + 0x690) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_165_REG (SOC_JPGD_CFG_BASE + 0x694) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_166_REG (SOC_JPGD_CFG_BASE + 0x698) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_167_REG (SOC_JPGD_CFG_BASE + 0x69C) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_168_REG (SOC_JPGD_CFG_BASE + 0x6A0) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_169_REG (SOC_JPGD_CFG_BASE + 0x6A4) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_170_REG (SOC_JPGD_CFG_BASE + 0x6A8) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_171_REG (SOC_JPGD_CFG_BASE + 0x6AC) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_172_REG (SOC_JPGD_CFG_BASE + 0x6B0) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_173_REG (SOC_JPGD_CFG_BASE + 0x6B4) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_174_REG (SOC_JPGD_CFG_BASE + 0x6B8) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_HAC_SYMBOL_TABLE_175_REG (SOC_JPGD_CFG_BASE + 0x6BC) /* Huffman AC symbol memory */
+#define SOC_JPGD_CFG_DEBUG_0_REG              (SOC_JPGD_CFG_BASE + 0x800) /* Debug information */
+#define SOC_JPGD_CFG_DEBUG_1_REG              (SOC_JPGD_CFG_BASE + 0x804) /* Debug information */
+#define SOC_JPGD_CFG_DEBUG_2_REG              (SOC_JPGD_CFG_BASE + 0x808) /* Debug information */
+#define SOC_JPGD_CFG_DEBUG_3_REG              (SOC_JPGD_CFG_BASE + 0x80C) /* Debug information */
+#define SOC_JPGD_CFG_DEBUG_4_REG              (SOC_JPGD_CFG_BASE + 0x810) /* Debug information */
+#define SOC_JPGD_CFG_DEBUG_5_REG              (SOC_JPGD_CFG_BASE + 0x814) /* Debug information */
+#define SOC_JPGD_CFG_DEBUG_6_REG              (SOC_JPGD_CFG_BASE + 0x818) /* Debug information */
+#define SOC_JPGD_CFG_DEBUG_7_REG              (SOC_JPGD_CFG_BASE + 0x81C) /* Debug information */
+#define SOC_JPGD_CFG_DEBUG_8_REG              (SOC_JPGD_CFG_BASE + 0x820) /* Debug information */
+#define SOC_JPGD_CFG_DEBUG_9_REG              (SOC_JPGD_CFG_BASE + 0x824) /* Debug information */
+#define SOC_JPGD_CFG_DEBUG_10_REG             (SOC_JPGD_CFG_BASE + 0x828) /* Debug information */
+#define SOC_JPGD_CFG_DEBUG_11_REG             (SOC_JPGD_CFG_BASE + 0x82C) /* Debug information */
+#define SOC_JPGD_CFG_DEBUG_12_REG             (SOC_JPGD_CFG_BASE + 0x830) /* Debug information */
+#define SOC_JPGD_CFG_DEBUG_13_REG             (SOC_JPGD_CFG_BASE + 0x834) /* Debug information */
+#define SOC_JPGD_CFG_DEBUG_14_REG             (SOC_JPGD_CFG_BASE + 0x838) /* Debug information */
+#define SOC_JPGD_CFG_DEBUG_15_REG             (SOC_JPGD_CFG_BASE + 0x83C) /* Debug information */
+#define SOC_JPGD_CFG_JPEGD_FRM_CYCLE_CNT_REG  (SOC_JPGD_CFG_BASE + 0x840) /* jpegd frame cycle cnt */
+
+#endif // __JPGD_CFG_REG_OFFSET_H__

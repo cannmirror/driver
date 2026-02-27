@@ -1,0 +1,74 @@
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2026. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ */
+
+#ifndef TYPE_DVPP_VPU_TYPE_H
+#define TYPE_DVPP_VPU_TYPE_H
+
+typedef enum {
+    VPU_VPC_TYPE_TOP = 3,
+    VPU_VPC_TYPE_CHNL_CVDR,
+    VPU_VPC_TYPE_CHNL_CACHE,
+    VPU_VPC_TYPE_PIPE_TOP,
+    VPU_VPC_TYPE_PIPE_IN0SWAP,
+    VPU_VPC_TYPE_PIPE_IN0UVUP,
+    VPU_VPC_TYPE_PIPE_IN0CSC,
+    VPU_VPC_TYPE_PIPE_IN0UVDOWN,
+    VPU_VPC_TYPE_PIPE_PRECROP_CHN0,
+    VPU_VPC_TYPE_PIPE_PREPADDING_CHN0,
+    VPU_VPC_TYPE_PIPE_RESIZE_CHN0,
+    VPU_VPC_TYPE_PIPE_RESIZE_CHN1,
+    VPU_VPC_TYPE_PIPE_YUVSCALER_CHN0,
+    VPU_VPC_TYPE_PIPE_YUVSCALER_CHN1,
+    VPU_VPC_TYPE_PIPE_POSTPADDING_CHN0,
+    VPU_VPC_TYPE_PIPE_POSTCROP_CHN0,
+    VPU_VPC_TYPE_PIPE_HISTOGRAM,
+    VPU_VPC_TYPE_PIPE_OUT0SWAP,
+    VPU_VPC_TYPE_PIPE_OUT0UVUP,
+    VPU_VPC_TYPE_PIPE_OUT0CSC,
+    VPU_VPC_TYPE_PIPE_OUT0UVDOWN,
+    VPU_VPC_TYPE_PIPE_CONVERT,
+    VPU_VPC_TYPE_PIPE_MOSAIC,
+    VPU_VPC_TYPE_PIPE_COVER,
+    VPU_VPC_TYPE_PIPE_OSD,
+    VPU_VPC_TYPE_PIPE_ROTATE,
+    VPU_VPC_TYPE_PIPE_AFFINE,
+    VPU_VPC_TYPE_PIPE_LUT,
+    VPU_VPC_TYPE_PIPE_FLIP,
+    VPU_VPC_TYPE_PIPE_FILTER,
+    VPU_VPC_TYPE_PIPE_BLENDING,
+    VPU_VPC_TYPE_PIPE_PIXAUG,
+    VPU_VPC_TYPE_PIPE_HSV,
+    VPU_VPC_TYPE_CHNL_RDMA,
+    VPU_VPC_TYPE_PIPE_POSTPADDING_CHN1,
+    VPU_VPC_TYPE_PIPE_OUT1SWAP,
+    VPU_VPC_TYPE_PIPE_OUT1UVDOWN,
+    VPU_VPC_TYPE_PIPE_DUMPREG,
+    VPU_VPC_TYPE_PIPE_PYRAMID,
+    VPU_VPC_TYPE_PIPE_DATATRANSFORM,
+    VPU_VPC_TYPE_PIPE_IRCSC,
+    VPU_VPC_TYPE_PIPE_OUT1CSC,
+    VPU_VPC_TYPE_PIPE_LEVEL2POINTER,
+    VPU_VPC_TYPE_BUTT,
+} vpu_mod_vpc_type;
+
+typedef enum {
+    VPU_JPEGD_TYPE_DEC = 3,
+    VPU_JPEGD_TYPE_BUTT,
+} vpu_mod_jpegd_type;
+
+typedef enum {
+    VPU_JPEGE_TYPE_ENC = 3,
+    VPU_JPEGE_TYPE_BUTT,
+} vpu_mod_jpege_type;
+
+#endif // #ifndef TYPE_DVPP_VPU_TYPE_H
