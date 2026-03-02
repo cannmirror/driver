@@ -7,18 +7,18 @@
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
  * See LICENSE in the root of the software repository for the full text of the License.
  */
- 
+
 #include <stdio.h>
 #include "dcmi_interface_api.h"
 #define MAX_CARD_NUMBER (16)
 #define NPU_OK (0)
-int main()
+int main(int argc, char **argv)
 {
     int ret;
     int card_count = 0;
     int device_count = 0;
     int card_id;
-    int card_id_list[8] = {0};
+    int card_id_list[MAX_CARD_NUMBER] = {0};
     int device_id = 0;
     enum dcmi_reset_channel inband_channel = INBAND_CHANNEL;
     ret = dcmi_init();
@@ -33,6 +33,7 @@ int main()
     }
 
     // 复位
+    printf("Start reseting device, this may take a few minutes.\n");
     ret = dcmi_set_device_reset(card_id_list[0], device_id, inband_channel);
     if (ret != NPU_OK) {
         printf("dcmi_set_device_reset fail! card_id is %d , device_id is %d, channel_type: %d, ret: %d\n",

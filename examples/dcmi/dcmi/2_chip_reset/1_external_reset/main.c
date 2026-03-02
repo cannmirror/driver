@@ -12,16 +12,61 @@
 #include <unistd.h>
 #include "dcmi_interface_api.h"
 #define NPU_OK (0)
-int main()
+
+int reset_single_device(int card_id, int device_id)
+{
+    int ret;
+    int state = 0;
+
+    // 查询带外通道
+    ret = dcmi_get_device_outband_channel_state(card_id, device_id, &state);
+    if (ret != NPU_OK) {
+        printf("dcmi_get_device_outband_channel_state fail! card_id is %d , device_id is %d, ret: %d\n",
+            card_id, device_id, ret);
+        if (ret == -8255) {
+            printf("该设备不支持带外复位\n");
+        }
+        return ret;
+    }
+    printf("dcmi_get_device_outband_channel_state successful! card_id is %d, device_id:%d\n", card_id, device_id);
+
+    // 预复位 dcmi_set_device_pre_reset只支持标卡环境，在标卡上才成功。
+    ret = dcmi_set_device_pre_reset(card_id, device_id);
+    if (ret != NPU_OK) {
+        printf("dcmi_set_device_pre_reset fail! card_id is %d , device_id is %d, ret: %d\n", card_id, device_id, ret);
+        return ret;
+    }
+    printf("dcmi_set_device_pre_reset successful! card_id is %d, device_id:%d\n", card_id, device_id);
+
+    // 复位
+    ret = dcmi_set_device_reset(card_id, device_id, OUTBAND_CHANNEL);
+    if (ret != NPU_OK) {
+        printf("dcmi_set_device_reset fail! card_id is %d , device_id is %d, channel_type: %d, ret: %d\n",
+            card_id, device_id, OUTBAND_CHANNEL, ret);
+        return ret;
+    }
+    printf("dcmi_set_device_reset successful! card_id is %d, device_id:%d, channel_type: %d\n",
+        card_id, device_id, OUTBAND_CHANNEL);
+
+    sleep(3);
+    // 重新扫描
+    ret = dcmi_set_device_rescan(card_id, device_id);
+    if (ret != NPU_OK) {
+        printf("dcmi_set_device_rescan fail! card_id is %d , device_id is %d, ret: %d\n", card_id, device_id, ret);
+    }
+    printf("dcmi_set_device_rescan successful! card_id is %d, device_id:%d\n", card_id, device_id);
+
+    return ret;
+}
+int main(int argc, char **argv)
 {
     int ret;
     int card_count = 0;
     int device_count = 0;
-    int card_id;
-    int card_id_list[8] = {0};
+    int index;
+    int card_id_list[MAX_CARD_NUM] = {0};
     int device_id;
-    int state = 0;
-    enum dcmi_reset_channel outband_channel = OUTBAND_CHANNEL;
+
     ret = dcmi_init();
     if (ret != NPU_OK) {
         printf("Failed to init dcmi.\n");
@@ -32,56 +77,16 @@ int main()
         printf("Failed to get card number,ret is %d\n", ret);
         return ret;
     }
-    for (card_id = 0; card_id < card_count; card_id++) {
-        ret = dcmi_get_device_num_in_card(card_id_list[card_id], &device_count);
+    for (index = 0; index < card_count; index++) {
+        ret = dcmi_get_device_num_in_card(card_id_list[index], &device_count);
         if (ret != NPU_OK) {
-            printf("dcmi_get_device_num_in_card failed! card_id is %d ,ret: %d\n", card_id_list[card_id], ret);
+            printf("dcmi_get_device_num_in_card failed! card_id is %d ,ret: %d\n", card_id_list[index], ret);
             return ret;
         }
         for (device_id = 0; device_id <= device_count; device_id++) {
-            // 查询带外通道
-            ret = dcmi_get_device_outband_channel_state(card_id_list[card_id], device_id, &state);
+            ret = reset_single_device(card_id_list[index], device_id);
             if (ret != NPU_OK) {
-                printf("dcmi_get_device_outband_channel_state fail! card_id is %d , device_id is %d, ret: %d\n",
-                       card_id_list[card_id], device_id, ret);
-                if (ret == -8255) {
-                    printf("该设备不支持\n");
-                }
                 return ret;
-            } else {
-                printf("dcmi_get_device_outband_channel_state successful! card_id is %d, device_id:%d\n",
-                       card_id_list[card_id], device_id);
-            }
-            // 预复位
-            ret = dcmi_set_device_pre_reset(card_id_list[card_id], device_id);
-            if (ret != NPU_OK) {
-                printf("dcmi_set_device_pre_reset fail! card_id is %d , device_id is %d, ret: %d\n",
-                       card_id_list[card_id], device_id, ret);
-                return ret;
-            } else {
-                printf("dcmi_set_device_pre_reset successful! card_id is %d, device_id:%d\n", card_id_list[card_id],
-                       device_id);
-            }
-            // 复位
-            ret = dcmi_set_device_reset(card_id_list[card_id], device_id, outband_channel);
-            if (ret != NPU_OK) {
-                printf("dcmi_set_device_reset fail! card_id is %d , device_id is %d, channel_type: %d, ret: %d\n",
-                       card_id_list[card_id], device_id, outband_channel, ret);
-                return ret;
-            } else {
-                printf("dcmi_set_device_reset successful! card_id is %d, device_id:%d, channel_type: %d\n",
-                       card_id_list[card_id], device_id, outband_channel);
-            }
-            sleep(3);
-            // 重新扫描
-            ret = dcmi_set_device_rescan(card_id_list[card_id], device_id);
-            if (ret != NPU_OK) {
-                printf("dcmi_set_device_rescan fail! card_id is %d , device_id is %d, ret: %d\n", card_id_list[card_id],
-                       device_id, ret);
-                return ret;
-            } else {
-                printf("dcmi_set_device_rescan successful! card_id is %d, device_id:%d\n", card_id_list[card_id],
-                       device_id);
             }
         }
     }
