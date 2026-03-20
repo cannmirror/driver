@@ -63,7 +63,7 @@ bash build.sh --make_clean
 ```
 ./Ascend-hdk-<chip_type>-driver-<version>_<os_version>-<arch>.run --full
 ```
-`<chip_type>`表示芯片类型，当前主要包括`910b`和`A3`；`<os_version>`表示操作系统发行版本，例如ubuntu20.04、openeuler22.03；`<arch>`表示芯片架构，取值包括x86_64与aarch64。
+`<chip_type>`表示芯片类型，当前主要包括`910b`和`A3`；`<version>`表示软件包版本号，例如8.5.0；`<os_version>`表示操作系统发行版本，例如ubuntu20.04、openeuler22.03；`<arch>`表示芯片架构，取值包括x86_64与aarch64。
 
 安装完成之后，用户编译生成的Driver软件包会替换已安装CANN开发套件包中的Driver相关软件。
 
