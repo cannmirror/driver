@@ -581,10 +581,10 @@ long ka_mm_get_user_pages_remote(ka_task_struct_t *tsk, ka_mm_struct_t *mm,
 #define ka_mm_dma_unmap_resource(dev, addr, size, dir, attrs) dma_unmap_resource(dev, addr, size, dir, attrs)
 #define ka_mm_memcpy_flushcache(dst, src, cnt) memcpy_flushcache(dst, src, cnt)
 #define ka_mm_get_user_pages_fast(start, nr_pages, gup_flags, pages) get_user_pages_fast(start, nr_pages, gup_flags, pages)
-#define ka_mm_alloc_contig_range(nr_pages, gfp_mask, nid, nodemask) alloc_contig_range(nr_pages, gfp_mask, nid, nodemask)
-#define ka_mm_free_contig_range(pfn, nr_pages) free_contig_range(pfn, nr_pages)
 #define ka_mm_numa_mem_id() numa_mem_id()
 
+int ka_mm_alloc_contig_range(unsigned long start, unsigned long end, unsigned migratetype, gfp_t gfp_mask);
+void ka_mm_free_contig_range(unsigned long pfn, unsigned long nr_pages);
 void *ka_mm_page_to_virt(ka_page_t *page);
 unsigned long ka_mm_get_vm_flags(ka_vm_area_struct_t *vma);
 void ka_mm_set_vm_flags(ka_vm_area_struct_t *vma, unsigned long flags);

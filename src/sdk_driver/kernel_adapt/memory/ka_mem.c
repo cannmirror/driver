@@ -15,6 +15,7 @@
 #include <linux/swap.h>
 #include <linux/swapops.h>
 #include <linux/compiler.h>
+#include <linux/version.h>
 
 #include "securec.h"
 #include "ka_memory_pub.h"
@@ -538,4 +539,22 @@ int ka_mm_va_to_pa_pgd_range(ka_pgd_t *pgd, u64 start, u64 end, u64 *pas, u64 *n
 }
 #endif
 EXPORT_SYMBOL_GPL(ka_mm_va_to_pa_pgd_range);
+
+int ka_mm_alloc_contig_range(unsigned long start, unsigned long end, unsigned migratetype, gfp_t gfp_mask)
+{
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0)
+    return alloc_contig_range(start, end, migratetype, gfp_mask);
+#else
+    return -ENOSYS;
+#endif
+}
+EXPORT_SYMBOL_GPL(ka_mm_alloc_contig_range);
+
+void ka_mm_free_contig_range(unsigned long pfn, unsigned long nr_pages)
+{
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0)
+	free_contig_range(pfn, nr_pages);
+#endif
+}
+EXPORT_SYMBOL_GPL(ka_mm_free_contig_range);
 #endif
