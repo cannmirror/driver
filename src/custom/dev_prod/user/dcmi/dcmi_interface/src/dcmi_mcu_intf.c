@@ -309,6 +309,7 @@ static int dcmi_mcu_get_info_by_i2c(int card_id, MCU_SMBUS_REQ_MSG *mcu_req, MCU
     ret = memcpy_s(mcu_rsp->data_info, dcmi_mcu_get_recv_data_max_len(), &rsp.data[0], rsp.length);
     if (ret != EOK) {
         gplog(LOG_ERR, "call memcpy_s failed. ret is %d.", ret);
+        return DCMI_ERR_CODE_INNER_ERR;
     }
 
     mcu_rsp->len = (int)rsp.length;
@@ -338,6 +339,7 @@ static int dcmi_mcu_set_info_by_i2c(int card_id, MCU_SMBUS_REQ_MSG *mcu_req)
     ret = memcpy_s(&req.data[0], send_msg_data_max_len, mcu_req->req_data, mcu_req->lenth);
     if (ret != EOK) {
         gplog(LOG_ERR, "call memcpy_s failed. ret is %d.", ret);
+        return DCMI_ERR_CODE_INNER_ERR;
     }
 
     ret = dcmi_mcu_set_lock(&fd, DCMI_MCU_GET_LOCK_TIMOUT);
@@ -426,6 +428,8 @@ static void mcu_get_info_dynamic_data_handle(MCU_SMBUS_RSP_MSG *mcu_rsp, const c
     ret = memcpy_s(mcu_rsp->data_info, mcu_rsp->total_len, buffer, copy_len);
     if (ret != EOK) {
         gplog(LOG_ERR, "call memcpy_s failed.%d.", ret);
+        mcu_rsp->len = 0;
+        return;
     }
 
     mcu_rsp->len = copy_len;
@@ -735,6 +739,7 @@ STATIC int dcmi_mcu_get_info_by_npu(int card_id, MCU_SMBUS_REQ_MSG *mcu_req, MCU
         err = memcpy_s(&ms_req->data[0], send_msg_data_max_len, mcu_req->req_data, mcu_req->req_data_len);
         if (err != EOK) {
             gplog(LOG_ERR, "call memcpy_s failed. err is %d.", err);
+            return err;
         }
     }
 
@@ -750,6 +755,7 @@ STATIC int dcmi_mcu_get_info_by_npu(int card_id, MCU_SMBUS_REQ_MSG *mcu_req, MCU
     err = memcpy_s(mcu_rsp->data_info, recv_msg_data_max_len, &ms_rsp->data[0], ms_rsp->length);
     if (err != EOK) {
         gplog(LOG_ERR, "call memcpy_s failed. err is %d.", err);
+        return err;
     }
 
     mcu_rsp->len = (int)ms_rsp->length;
@@ -792,6 +798,7 @@ STATIC int dcmi_mcu_set_info_by_npu(int card_id, MCU_SMBUS_REQ_MSG *mcu_req)
     err = memcpy_s(&ms_req->data[0], send_msg_data_max_len, mcu_req->req_data, mcu_req->lenth);
     if (err != EOK) {
         gplog(LOG_ERR, "call memcpy_s failed. err is %d.", err);
+        return err;
     }
 
     passthru_message.src_len = DMP_MSG_HEAD_LENGTH + mcu_req->lenth;
@@ -1856,16 +1863,19 @@ int dcmi_mcu_get_chip_info(int card_id, struct dcmi_chip_info_v2 *chip_info)
     ret = memcpy_s(chip_info->chip_type, MAX_CHIP_NAME_LEN, "mcu", strlen("mcu"));
     if (ret != EOK) {
         gplog(LOG_ERR, "call memcpy_s failed. ret is %d", ret);
+        return ret;
     }
 
     ret = memcpy_s(chip_info->chip_name, MAX_CHIP_NAME_LEN, "MCU", strlen("MCU"));
     if (ret != EOK) {
         gplog(LOG_ERR, "call memcpy_s failed. ret is %d.", ret);
+        return ret;
     }
 
     ret = memcpy_s(chip_info->chip_ver, MAX_CHIP_NAME_LEN, "V100", strlen("V100"));
     if (ret != EOK) {
         gplog(LOG_ERR, "call memcpy_s failed.%d.", ret);
+        return ret;
     }
 
     return DCMI_OK;
