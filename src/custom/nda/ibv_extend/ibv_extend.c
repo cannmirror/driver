@@ -8,7 +8,7 @@
  * See LICENSE in the root of the software repository for the full text of the License.
  *
  * File Name     : ibv_extend.c
- * Description   : The implementation of RDMA NDA Function extension interface
+ * Description   : The implementation of ibverbs extended Function extension interface
  */
 #define _GNU_SOURCE
 
@@ -638,51 +638,111 @@ static void load_extend_drivers()
 }
 
 /**
+ * @brief 检查驱动版本有效性
+ * @param ext_context 扩展上下文
+ * @param ext_ops 扩展操作结构体
+ * @return 0-版本有效，-1-版本无效
+ */
+static int validate_driver_version(struct ibv_context_extend *ext_context)
+{
+    if (!ext_context || !ext_context->ops) {
+        return 0;  // 无ops则跳过版本检查
+    }
+    
+    /* 检查版本是否未设置(UNUSED) */
+    if (ext_context->ops->version == IBV_EXTEND_DRIVER_VERSION_UNUSED) {
+        (void)fprintf(stderr,
+            OUTPFX "Error: Driver version is not set (version=0). "
+            "Driver must set a valid version number.\n");
+        return -1;
+    }
+    
+    /* 检查版本上限：驱动版本不能超过库支持的最新版本 */
+    if (ext_context->ops->version > IBV_EXTEND_DRIVER_VERSION_MAX) {
+        (void)fprintf(stderr,
+            OUTPFX "Error: Driver version %d exceeds ibv_extend(%s) max version %d. "
+            "Please upgrade the ibv_extend to support this driver.\n",
+            ext_context->ops->version, IBV_EXTEND_VERSION_STRING, IBV_EXTEND_DRIVER_VERSION_MAX);
+        return -1;
+    }
+    
+    return 0;
+}
+
+/**
+ * @brief 分配并验证扩展ibv_context_extend
+ * @param context ibv_context结构体指针
+ * @param ext_ops 扩展操作结构体
+ * @return 扩展上下文指针，失败返回NULL
+ */
+static struct ibv_context_extend *alloc_and_validate_context(
+    struct ibv_context *context,
+    const struct verbs_device_extend_ops *ext_ops)
+{
+    struct ibv_context_extend *ext_context;
+    
+    if (!ext_ops->alloc_context) {
+        ibv_extend_warning("alloc_context is NULL for ops %s", ext_ops->name);
+        return NULL;
+    }
+    
+    ext_context = ext_ops->alloc_context(context);
+    if (!ext_context) {
+        ibv_extend_warning("driver %s alloc ext context failed", ext_ops->name);
+        return NULL;
+    }
+    
+    /* 版本有效性检查 */
+    if (validate_driver_version(ext_context) != 0) {
+        /* 版本检查失败，释放已分配的上下文 */
+        if (ext_ops->free_context) {
+            ext_ops->free_context(ext_context);
+        }
+        return NULL;
+    }
+    
+    return ext_context;
+}
+
+/**
  * @brief 初始化verbs_extend上下文
  *
- * @param context ib上下文
+ * @param context ibv_context结构体指针
  * @return 返回扩展的上下文，如果失败则返回NULL
  */
 API_EXPORT struct ibv_context_extend *ibv_open_extend(struct ibv_context *context)
 {
     struct ibv_device *device;
     const struct verbs_device_extend_ops *ext_ops = NULL;
+    struct ibv_context_extend *ext_context = NULL;
 
-    // 检查上下文是否为空
+    /* 检查上下文是否为空 */
     if (context == NULL) {
         ibv_extend_warning("couldn't open extend context for NULL ibv_context");
         return NULL;
     }
 
-    // 获取ibv设备
+    /* 获取ibv设备 */
     device = context->device;
 
-    // 查找匹配的驱动程序
+    /* 第一次尝试：查找已注册的驱动程序 */
     ext_ops = try_extend_driver(device);
-    // 如果找到扩展操作，则分配上下文
     if (ext_ops) {
-        if (!ext_ops->alloc_context) {
-            ibv_extend_warning("alloc_context is NULL for ops %s", ext_ops->name);
-            return NULL;
-        }
-        return ext_ops->alloc_context(context);
+        ext_context = alloc_and_validate_context(context, ext_ops);
+        /* 如果找到驱动,无论分配成功或失败都直接返回 */
+        return ext_context;
     }
 
-    // 加载驱动程序
+    /* 第二次尝试：加载驱动程序后再查找 */
     load_extend_drivers();
-
-    // 再次查找匹配的驱动程序
+    
     ext_ops = try_extend_driver(device);
-    // 如果找到扩展操作，则分配上下文
     if (ext_ops) {
-        if (!ext_ops->alloc_context) {
-            ibv_extend_warning("alloc_context is NULL for ops %s", ext_ops->name);
-            return NULL;
-        }
-        return ext_ops->alloc_context(context);
+        ext_context = alloc_and_validate_context(context, ext_ops);
+        return ext_context;
     }
 
-    // 如果仍然没有找到扩展操作，则返回NULL
+    /* 未找到可用的扩展操作 */
     ibv_extend_warning("no available ops for open extend context");
     return NULL;
 }
@@ -733,11 +793,13 @@ API_EXPORT int ibv_query_device_extend(struct ibv_context_extend *context,
                                        struct ibv_device_attr_extend *ext_dev_attr)
 {
     if (context == NULL || ext_dev_attr == NULL) {
+        ibv_extend_warning("invalid parameter for query device extend");
         return -EINVAL;
     }
 
     if (context->ops == NULL || context->ops->query_device == NULL) {
-        return -EPERM;
+        ibv_extend_warning("no available ops for query device extend");
+        return -EOPNOTSUPP;
     }
 
     ext_dev_attr->ext_cap = 0;
@@ -756,10 +818,12 @@ API_EXPORT struct ibv_qp_extend *ibv_create_qp_extend(struct ibv_context_extend 
                                                       struct ibv_qp_init_attr_extend *qp_init_attr)
 {
     if (context == NULL || qp_init_attr == NULL) {
+        ibv_extend_warning("invalid parameter for create qp extend");
         return NULL;
     }
 
     if (context->ops == NULL || context->ops->create_qp == NULL) {
+        ibv_extend_warning("no available ops for create qp extend");
         return NULL;
     }
 
@@ -777,10 +841,12 @@ API_EXPORT struct ibv_cq_extend *ibv_create_cq_extend(struct ibv_context_extend 
                                                       struct ibv_cq_init_attr_extend *cq_init_attr)
 {
     if (context == NULL || cq_init_attr == NULL) {
+        ibv_extend_warning("invalid parameter for create cq extend");
         return NULL;
     }
 
     if (context->ops == NULL || context->ops->create_cq == NULL) {
+        ibv_extend_warning("no available ops for create cq extend");
         return NULL;
     }
 
@@ -798,10 +864,12 @@ API_EXPORT struct ibv_srq_extend *ibv_create_srq_extend(struct ibv_context_exten
                                                         struct ibv_srq_init_attr_extend *srq_init_attr)
 {
     if (context == NULL || srq_init_attr == NULL) {
+        ibv_extend_warning("invalid parameter for create srq extend");
         return NULL;
     }
 
     if (context->ops == NULL || context->ops->create_srq == NULL) {
+        ibv_extend_warning("no available ops for create srq extend");
         return NULL;
     }
 
@@ -818,11 +886,13 @@ API_EXPORT struct ibv_srq_extend *ibv_create_srq_extend(struct ibv_context_exten
 API_EXPORT int ibv_destroy_qp_extend(struct ibv_context_extend *context, struct ibv_qp_extend *qp_extend)
 {
     if (context == NULL || qp_extend == NULL) {
+        ibv_extend_warning("invalid parameter for destroy qp extend");
         return -EINVAL;
     }
 
     if (context->ops == NULL || context->ops->destroy_qp == NULL) {
-        return -EPERM;
+        ibv_extend_warning("no available ops for destroy qp extend");
+        return -EOPNOTSUPP;
     }
 
     // 调用底层驱动销毁QP
@@ -838,11 +908,13 @@ API_EXPORT int ibv_destroy_qp_extend(struct ibv_context_extend *context, struct 
 API_EXPORT int ibv_destroy_cq_extend(struct ibv_context_extend *context, struct ibv_cq_extend *cq_extend)
 {
     if (context == NULL || cq_extend == NULL) {
+        ibv_extend_warning("invalid parameter for destroy cq extend");
         return -EINVAL;
     }
 
     if (context->ops == NULL || context->ops->destroy_cq == NULL) {
-        return -EPERM;
+        ibv_extend_warning("no available ops for destroy cq extend");
+        return -EOPNOTSUPP;
     }
 
     // 调用底层驱动销毁CQ
@@ -858,15 +930,89 @@ API_EXPORT int ibv_destroy_cq_extend(struct ibv_context_extend *context, struct 
 API_EXPORT int ibv_destroy_srq_extend(struct ibv_context_extend *context, struct ibv_srq_extend *srq_extend)
 {
     if (context == NULL || srq_extend == NULL) {
+        ibv_extend_warning("invalid parameter for destroy srq extend");
         return -EINVAL;
     }
 
     if (context->ops == NULL || context->ops->destroy_srq == NULL) {
-        return -EPERM;
+        ibv_extend_warning("no available ops for destroy srq extend");
+        return -EOPNOTSUPP;
     }
 
     // 调用底层驱动销毁SRQ
     return context->ops->destroy_srq(srq_extend);
+}
+
+/**
+ * @brief 修改QP扩展属性
+ * @param context 扩展上下文指针
+ * @param attr QP扩展属性结构体
+ * @param attr_mask 属性掩码，指定需要修改的属性
+ * @return 0-成功，其他值-失败
+ */
+API_EXPORT int ibv_modify_qp_extend(struct ibv_context_extend *context,
+                                    struct ibv_qp_attr_extend *attr, int attr_mask)
+{
+    if (context == NULL || attr == NULL) {
+        ibv_extend_warning("invalid parameter for modify qp extend");
+        return -EINVAL;
+    }
+
+    if (context->ops == NULL) {
+        ibv_extend_warning("no available ops for modify qp extend");
+        return -EOPNOTSUPP;
+    }
+
+    /* 版本检查：modify_qp 是 V2 新增功能，驱动版本必须 >= V2 */
+    if (context->ops->version < IBV_EXTEND_DRIVER_VERSION_V2) {
+        ibv_extend_warning("driver version %d does not support modify_qp (requires V2)",
+            context->ops->version);
+        return -EOPNOTSUPP;
+    }
+
+    if (context->ops->modify_qp == NULL) {
+        ibv_extend_warning("modify_qp is not supported");
+        return -EOPNOTSUPP;
+    }
+
+    // 调用底层驱动修改QP属性
+    return context->ops->modify_qp(context->context, attr, attr_mask);
+}
+
+/**
+ * @brief 查询QP扩展属性
+ * @param context 扩展上下文指针
+ * @param attr QP扩展属性结构体，用于返回查询结果
+ * @param attr_mask 属性掩码，指定需要查询的属性
+ * @return 0-成功，其他值-失败
+ */
+API_EXPORT int ibv_query_qp_extend(struct ibv_context_extend *context,
+                                   struct ibv_qp_attr_extend *attr, int attr_mask)
+{
+    if (context == NULL || attr == NULL) {
+        ibv_extend_warning("invalid parameter for query qp extend");
+        return -EINVAL;
+    }
+
+    if (context->ops == NULL) {
+        ibv_extend_warning("no available ops for query qp extend");
+        return -EOPNOTSUPP;
+    }
+
+    /* 版本检查：query_qp 是 V2 新增功能，驱动版本必须 >= V2 */
+    if (context->ops->version < IBV_EXTEND_DRIVER_VERSION_V2) {
+        ibv_extend_warning("driver version %d does not support query_qp (requires V2)",
+            context->ops->version);
+        return -EOPNOTSUPP;
+    }
+
+    if (context->ops->query_qp == NULL) {
+        ibv_extend_warning("query_qp is not supported");
+        return -EOPNOTSUPP;
+    }
+
+    // 调用底层驱动查询QP属性
+    return context->ops->query_qp(context->context, attr, attr_mask);
 }
 
 /**

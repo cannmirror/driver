@@ -4,78 +4,115 @@
 - [Introduction](#introduction)
   - [Component Introduction](#component-introduction)
   - [Application Scenarios](#application-scenarios)
+    - [NPU Direct Async Scenarios](#npu-direct-async-scenarios)
+    - [Hyper RoCE Scenarios](#hyper-roce-scenarios)
 - [Installation](#installation)
   - [Method 1: Install through Source Compilation](#method-1-install-through-source-compilation)
   - [Method 2: Install through HDK Package](#method-2-install-through-hdk-package)
 - [Usage](#usage)
 - [API Reference](#api-reference)
   - [Common Interfaces](#common-interfaces)
-    - [ibv_extend_get_version](#ibv_extend_get_version)
-    - [ibv_extend_check_version](#ibv_extend_check_version)
-  - [North-bound Interfaces (Application Layer Call)](#north-bound-interfaces-application-layer-call)
-    - [ibv_open_extend](#ibv_open_extend)
-    - [ibv_close_extend](#ibv_close_extend)
-    - [ibv_query_device_extend](#ibv_query_device_extend)
-    - [ibv_create_qp_extend](#ibv_create_qp_extend)
-    - [ibv_create_cq_extend](#ibv_create_cq_extend)
-    - [ibv_create_srq_extend](#ibv_create_srq_extend)
-    - [ibv_destroy_qp_extend](#ibv_destroy_qp_extend)
-    - [ibv_destroy_cq_extend](#ibv_destroy_cq_extend)
-    - [ibv_destroy_srq_extend](#ibv_destroy_srq_extend)
+    - [ibv\_extend\_get\_version](#ibv_extend_get_version)
+    - [ibv\_extend\_check\_version](#ibv_extend_check_version)
+  - [North-bound Interfaces (Context Management)](#north-bound-interfaces-context-management)
+    - [ibv\_open\_extend](#ibv_open_extend)
+    - [ibv\_close\_extend](#ibv_close_extend)
+  - [North-bound Interfaces (NPU Direct Async)](#north-bound-interfaces-npu-direct-async)
+    - [ibv\_query\_device\_extend](#ibv_query_device_extend)
+    - [ibv\_create\_qp\_extend](#ibv_create_qp_extend)
+    - [ibv\_create\_cq\_extend](#ibv_create_cq_extend)
+    - [ibv\_create\_srq\_extend](#ibv_create_srq_extend)
+    - [ibv\_destroy\_qp\_extend](#ibv_destroy_qp_extend)
+    - [ibv\_destroy\_cq\_extend](#ibv_destroy_cq_extend)
+    - [ibv\_destroy\_srq\_extend](#ibv_destroy_srq_extend)
+  - [North-bound Interfaces (Hyper RoCE)](#north-bound-interfaces-hyper-roce)
+    - [ibv\_modify\_qp\_extend](#ibv_modify_qp_extend)
+    - [ibv\_query\_qp\_extend](#ibv_query_qp_extend)
   - [South-bound Interfaces (Driver Call)](#south-bound-interfaces-driver-call)
-    - [verbs_register_driver_extend](#verbs_register_driver_extend)
+    - [verbs\_register\_driver\_extend](#verbs_register_driver_extend)
 - [Key Structure Description](#key-structure-description)
   - [Enum Type Definition](#enum-type-definition)
-    - [queue_buf_dma_mode](#queue_buf_dma_mode)
-    - [doorbell_map_mode](#doorbell_map_mode)
-    - [memcpy_direction](#memcpy_direction)
-    - [ibv_qp_init_cap](#ibv_qp_init_cap)
-    - [ibv_extend_device_cap](#ibv_extend_device_cap)
+    - [queue\_buf\_dma\_mode](#queue_buf_dma_mode)
+    - [doorbell\_map\_mode](#doorbell_map_mode)
+    - [memcpy\_direction](#memcpy_direction)
+    - [ibv\_qp\_init\_cap](#ibv_qp_init_cap)
+    - [ibv\_extend\_device\_cap](#ibv_extend_device_cap)
+    - [IBV\_EXTEND\_DRIVER\_VERSION (Driver Operations Interface Version)](#ibv_extend_driver_version-driver-operations-interface-version)
+    - [ibv\_hyroce\_feature\_type](#ibv_hyroce_feature_type)
+    - [ibv\_hyroce\_feature\_version](#ibv_hyroce_feature_version)
+    - [ibv\_lb\_mode](#ibv_lb_mode)
+    - [ibv\_qp\_attr\_extend\_mask](#ibv_qp_attr_extend_mask)
   - [Core Data Structures](#core-data-structures)
-    - [doorbell_map_desc](#doorbell_map_desc)
-    - [ibv_extend_ops](#ibv_extend_ops)
-    - [queue_buf](#queue_buf)
-    - [queue_info](#queue_info)
-    - [ibv_qp_extend](#ibv_qp_extend)
-    - [ibv_cq_extend](#ibv_cq_extend)
-    - [ibv_srq_extend](#ibv_srq_extend)
-    - [ibv_qp_init_attr_extend](#ibv_qp_init_attr_extend)
-    - [ibv_cq_init_attr_extend](#ibv_cq_init_attr_extend)
-    - [ibv_srq_init_attr_extend](#ibv_srq_init_attr_extend)
-    - [ibv_device_attr_extend](#ibv_device_attr_extend)
-    - [ibv_context_extend](#ibv_context_extend)
-    - [ibv_context_extend_ops](#ibv_context_extend_ops)
-    - [verbs_device_extend_ops](#verbs_device_extend_ops)
+    - [doorbell\_map\_desc](#doorbell_map_desc)
+    - [ibv\_extend\_ops](#ibv_extend_ops)
+    - [ibv\_context\_extend\_ops](#ibv_context_extend_ops)
+    - [verbs\_device\_extend\_ops](#verbs_device_extend_ops)
+    - [ibv\_hyroce\_feature](#ibv_hyroce_feature)
+    - [ibv\_mp\_config](#ibv_mp_config)
+    - [ibv\_ar\_config](#ibv_ar_config)
+    - [ibv\_sack\_config](#ibv_sack_config)
+    - [ibv\_qp\_attr\_extend](#ibv_qp_attr_extend)
 - [FAQ](#faq)
-  - [Error when calling ibv_open_extend interface to initialize extension library](#error-when-calling-ibv_open_extend-interface-to-initialize-extension-library)
+  - [Error when calling ibv\_open\_extend interface to initialize extension library](#error-when-calling-ibv_open_extend-interface-to-initialize-extension-library)
 
 # Introduction
 
 ## Component Introduction
 
-ibverbs_extend (hereinafter referred to as ibv_extend) component is an extension of standard RDMA verbs interfaces, specifically designed to support direct-drive RDMA communication in NDA (NPUDirect Async) scenarios.
+ibverbs_extend (hereinafter referred to as ibv_extend) component is an extension library for standard RDMA verbs interfaces, providing capabilities beyond standard ibverbs for upper-layer communication components.
 
 The ibv_extend component achieves north-south decoupling through unified interfaces, as shown in the following figure:
 
 - North-bound shields underlying network card hardware differences, providing transparent access for HCOMM and other communication transport layers.
 - South-bound interfaces with 1825, Yunmai, and other network card extension drivers, enabling them to work without sensing upper-layer computing and memory resource differences.
 
-![ibv_extend Logic Diagram](figures/ibv_extend逻辑框图.png)
+![ibv_extend Logic Diagram](figures/ibv_extend_Logic_Block_Diagram.png)
+
+The ibv_extend component currently supports the following two independent feature modules:
+
+- **NPU Direct Async (NDA)**: Supports RDMA queue resource management on the NPU side, enabling direct data transfer between NPU and network cards
+- **Hyper RoCE**: Supports advanced RoCE feature configuration, including load balancing, selective retransmission, and other advanced network communication capabilities
+
+The two feature modules are independent and do not depend on each other:
+
+- For scenarios requiring only NDA features, drivers need only implement V1 version interfaces
+- For scenarios requiring only Hyper RoCE features, drivers need to implement V2 version interfaces (V2 includes V1 base interfaces)
+- Both features can be used simultaneously; the same extension context created via `ibv_open_extend` provides access to all functionality
+
+The ibv_extend component currently supports the following two independent feature modules:
+
+- **NPU Direct Async (NDA)**: Supports RDMA queue resource management on the NPU side, enabling direct data transfer between NPU and network cards
+- **Hyper RoCE**: Supports advanced RoCE feature configuration, including load balancing, selective retransmission, and other advanced network communication capabilities
+
+The two feature modules are independent and do not depend on each other:
+
+- For scenarios requiring only NDA features, drivers need only implement V1 version interfaces
+- For scenarios requiring only Hyper RoCE features, drivers need to implement V2 version interfaces (V2 includes V1 base interfaces)
+- Both features can be used simultaneously; the same extension context created via `ibv_open_extend` provides access to all functionality
 
 The ibv_extend component provides the following core features:
 
 - Dynamic loading and management of extension drivers
-- Creation and destruction of extended QP/CQ/SRQ
+- Creation and destruction of extended QP/CQ/SRQ (NDA feature)
+- Modification and query of QP extended attributes (Hyper RoCE feature)
 - Support for north-south custom hardware operations through callback function mechanism
 
 ## Application Scenarios
 
-This component mainly applies to the following scenarios:
+### NPU Direct Async Scenarios
 
 - Direct data transfer between NPU and RDMA network card.
 - Bypassing Host CPU, direct-drive control plane between NPU and RDMA network card.
 
-![Application Scenario Diagram](figures/应用场景.png)
+![NDA Application Scenario Diagram](figures/NDA_Application_Scenario.png)
+
+### Hyper RoCE Scenarios
+
+- Network communication requiring advanced RoCE protocol features.
+- Multi-path load balancing and adaptive routing optimization.
+- Selective retransmission for improved network reliability.
+
+![Hyper RoCE Application Scenario Diagram](figures/Hyper_RoCE_Application_Scenario.png)
 
 # Installation
 
@@ -300,7 +337,7 @@ Example: `export IBV_EXTEND_DRIVERS="/path1/my_ext_driver1.so:/path2/my_ext_driv
     cd /etc/libibverbs_extend.d/
     ```
 
-3. Create extension driver configuration file. Configuration file content format: driver <driver_name>.
+3. Create extension driver configuration file. Configuration file content format: driver <driver\_name\>.
 
     Assume driver extension library is libmy_ext_driver.so, use the following command to generate configuration file.
 
@@ -385,7 +422,7 @@ if (ret == 0) {
 }
 ```
 
-## North-bound Interfaces (Application Layer Call)
+## North-bound Interfaces (Context Management)
 
 ### ibv_open_extend
 
@@ -475,6 +512,326 @@ if (ret != 0) {
 }
 ```
 
+## North-bound Interfaces (NPU Direct Async)
+
+### ibv\_query\_device\_extend
+
+**Function Prototype**
+
+`int ibv_query_device_extend(struct ibv_context_extend *context, struct ibv_device_attr_extend *ext_dev_attr)`
+
+**Function**
+
+Query device extension capabilities.
+
+**Parameters**
+
+- context: Extension context, must be created using ibv_open_extend, non-null.
+- ext_dev_attr: Returned device extension attributes, no additional memory allocated internally, non-null.
+
+**Return Value**
+
+- 0: Success.
+- EINVAL: Invalid parameter.
+- Driver abnormal return value.
+
+**Usage Example**
+
+```c
+int ret = ibv_query_device_extend(ext_ctx, &ext_dev_attr);
+if (ret != 0) {
+    fprintf(stderr, "Failed to query extend context: %d\n", ret);
+}
+if (ext_dev_attr.ext_cap & IBV_EXTEND_DEV_NDA) {
+/* Device supports NDA */
+}
+```
+
+### ibv\_create\_qp\_extend
+
+**Function Prototype**
+
+`struct ibv_qp_extend *ibv_create_qp_extend(struct ibv_context_extend *context, struct ibv_qp_init_attr_extend *qp_init_attr)`
+
+**Function**
+
+Call underlying driver's create_qp to create extended QP.
+
+**Parameters**
+
+- context: Extension context, must be created using ibv_open_extend, non-null.
+- qp_init_attr: QP initialization configuration (includes qbuf DMA mode and resource callback functions), non-null.
+
+**Return Value**
+
+- QP extended structure pointer: Extended QP creation successful.
+- NULL: Extended QP creation failed.
+
+**Usage Example**
+
+```c
+struct ibv_qp_init_attr_extend qp_attr = {
+    .pd = pd,
+    .attr = {
+    .cap = { .max_send_wr = 128, .max_recv_wr = 128 },
+    .qp_type = IBV_QPT_RC,
+    },
+    .type = QU_BUF_DMA_MODE_DEFAULT,
+    .ops = &my_extend_ops,
+};
+struct ibv_qp_extend *qp_ext = ibv_create_qp_extend(ext_ctx, &qp_attr);
+```
+
+### ibv\_create\_cq\_extend
+
+**Function Prototype**
+
+`struct ibv_cq_extend *ibv_create_cq_extend(struct ibv_context_extend *context, struct ibv_cq_init_attr_extend *cq_init_attr)`
+
+**Function**
+
+Call underlying driver's create_cq to create extended CQ.
+
+**Parameters**
+
+- context: Extension context, must be created using ibv_open_extend, non-null.
+- cq_init_attr: CQ initialization configuration (includes qbuf DMA mode and resource callback functions), non-null.
+
+**Return Value**
+
+- CQ extended structure pointer: Extended CQ creation successful.
+- NULL: Extended CQ creation failed.
+
+**Usage Example**
+
+```c
+struct ibv_cq_init_attr_extend cq_attr = {
+    .attr {
+        .cqe = 128,
+    },
+    .type = QU_BUF_DMA_MODE_DEFAULT,
+    .ops = &my_extend_ops,
+};
+struct ibv_cq_extend *cq_ext = ibv_create_cq_extend(ext_ctx, &cq_attr);
+```
+
+### ibv\_create\_srq\_extend
+
+**Function Prototype**
+
+`struct ibv_srq_extend *ibv_create_srq_extend(struct ibv_context_extend *context, struct ibv_srq_init_attr_extend *srq_init_attr)`
+
+**Function**
+
+Call underlying driver's create_srq to create extended SRQ.
+
+**Parameters**
+
+- context: Extension context, must be created using ibv_open_extend, non-null.
+- srq_init_attr: SRQ initialization configuration (includes qbuf DMA mode and resource callback functions), non-null.
+
+**Return Value**
+
+- SRQ extended structure pointer: Extended SRQ creation successful.
+- NULL: Extended SRQ creation failed.
+
+### ibv\_destroy\_qp\_extend
+
+**Function Prototype**
+
+`int ibv_destroy_qp_extend(struct ibv_context_extend *context, struct ibv_qp_extend *qp_extend)`
+
+**Function**
+
+Call underlying driver's destroy_qp to destroy extended QP.
+
+**Parameters**
+
+- context: Extension context, must be created using ibv_open_extend, non-null.
+- qp_extend: QP extended structure, must be created by ibv_create_qp_extend.
+
+**Return Value**
+
+- 0: Success.
+- EINVAL: Invalid parameter.
+- Driver abnormal return value.
+
+### ibv\_destroy\_cq\_extend
+
+**Function Prototype**
+
+`int ibv_destroy_cq_extend(struct ibv_context_extend *context, struct ibv_cq_extend *cq_extend)`
+
+**Function**
+
+Call underlying driver's destroy_cq to destroy extended CQ.
+
+**Parameters**
+
+- context: Extension context, must be created using ibv_open_extend, non-null.
+- cq_extend: CQ extended structure, must be created by ibv_create_cq_extend.
+
+**Return Value**
+
+- 0: Success.
+- EINVAL: Invalid parameter.
+- Driver abnormal return value.
+
+### ibv\_destroy\_srq\_extend
+
+**Function Prototype**
+
+`int ibv_destroy_srq_extend(struct ibv_context_extend *context, struct ibv_srq_extend *srq_extend)`
+
+**Function**
+
+Call underlying driver's destroy_srq to destroy extended SRQ.
+
+**Parameters**
+
+- context: Extension context, must be created using ibv_open_extend, non-null.
+- srq_extend: SRQ extended structure, must be created using ibv_create_srq_extend.
+
+**Return Value**
+
+- 0: Success.
+- EINVAL: Invalid parameter.
+- Driver abnormal return value.
+
+## North-bound Interfaces (Hyper RoCE)
+
+Hyper RoCE interfaces are used to configure and query QP extended attributes for advanced RoCE features, including advanced RoCE feature type, load balancing mode, and selective retransmission parameters. Calling the following interfaces requires driver version >= IBV\_EXTEND\_DRIVER\_VERSION\_V2.
+
+### ibv\_modify\_qp\_extend
+
+**Function Prototype**
+
+`int ibv_modify_qp_extend(struct ibv_context_extend *context, struct ibv_qp_attr_extend *attr, int attr_mask)`
+
+**Function**
+
+Modify QP extended attributes, supporting configuration of advanced RoCE features, load balancing mode, multi-path parameters, selective retransmission parameters, etc.
+
+**Parameters**
+
+- context: Extension context, must be created using ibv\_open\_extend, non-null.
+- attr: QP extended attribute structure, containing attribute values to be modified, non-null.
+- attr_mask: Attribute mask, specifying attributes to be modified, a bitwise combination of ibv\_qp\_attr\_extend\_mask enum type.
+
+**Return Value**
+
+- 0: Success.
+- EINVAL: Invalid parameter.
+- EOPNOTSUPP: Driver version not supported (requires >= V2) or corresponding interface not implemented.
+
+**Usage Example**
+
+Each call to ibv\_modify\_qp\_extend should only modify one category of attributes (specified via attr\_mask). Different attribute categories need to be modified in separate calls. The example below demonstrates a typical Hyper RoCE initialization flow: first configure advanced RoCE features, then load balancing mode, and finally source UDP port.
+
+```c
+int init_hyper_roce(struct ibv_context_extend *ext_ctx, struct ibv_qp *qp)
+{
+    int rc;
+    struct ibv_qp_attr_extend attr;
+
+    /* 1. Configure advanced RoCE feature (type, version, SACK switch) */
+    attr = (struct ibv_qp_attr_extend){0};
+    attr.qp = qp;
+    attr.feature.type = IBV_HYPER_TYPE_VEROCE;
+    attr.feature.version = IBV_HYPER_VERSION_P2;
+    attr.feature.sack_enable = 1;  /* Enable selective retransmission */
+
+    rc = ibv_modify_qp_extend(ext_ctx, &attr, IBV_QP_ATTR_EXTEND_HYROCE_FEATURE);
+    if (rc < 0) {
+        fprintf(stderr, "Failed to modify QP with HYROCE feature, rc=%d\n", rc);
+        return rc;
+    }
+
+    /* 2. Configure load balancing mode */
+    attr = (struct ibv_qp_attr_extend){0};
+    attr.qp = qp;
+    attr.lb_mode = IBV_LB_MODE_MP;  /* Multi-Path mode */
+
+    rc = ibv_modify_qp_extend(ext_ctx, &attr, IBV_QP_ATTR_EXTEND_LB_MODE);
+    if (rc < 0) {
+        fprintf(stderr, "Failed to modify QP with lb_mode, rc=%d\n", rc);
+        return rc;
+    }
+
+    /* 3. Configure source UDP port */
+    attr = (struct ibv_qp_attr_extend){0};
+    attr.qp = qp;
+    attr.udp_src_port = 12345;
+
+    rc = ibv_modify_qp_extend(ext_ctx, &attr, IBV_QP_ATTR_EXTEND_UDP_SRC_PORT);
+    if (rc < 0) {
+        fprintf(stderr, "Failed to modify QP with UDP src port, rc=%d\n", rc);
+        return rc;
+    }
+
+    return 0;
+}
+```
+
+### ibv\_query\_qp\_extend
+
+**Function Prototype**
+
+`int ibv_query_qp_extend(struct ibv_context_extend *context, struct ibv_qp_attr_extend *attr, int attr_mask)`
+
+**Function**
+
+Query QP extended attributes, supporting query of advanced RoCE features, load balancing mode, multi-path parameters, selective retransmission parameters, etc.
+
+**Parameters**
+
+- context: Extension context, must be created using ibv\_open\_extend, non-null.
+- attr: QP extended attribute structure, used to return query results. qp field must be set to target QP beforehand, non-null.
+- attr_mask: Attribute mask, specifying attributes to be queried, a bitwise combination of ibv\_qp\_attr\_extend\_mask enum type.
+
+**Return Value**
+
+- 0: Success.
+- EINVAL: Invalid parameter.
+- EOPNOTSUPP: Driver version not supported (requires >= V2) or corresponding interface not implemented.
+
+**Usage Example**
+
+Each call to ibv\_query\_qp\_extend should only query one category of attributes (specified via attr\_mask). Different attribute categories need to be queried in separate calls. Before querying, zero out the attr structure and set the qp field.
+
+```c
+int query_hyper_roce_info(struct ibv_context_extend *ext_ctx, struct ibv_qp *qp)
+{
+    int rc;
+    struct ibv_qp_attr_extend attr;
+
+    /* 1. Query advanced RoCE feature */
+    attr = (struct ibv_qp_attr_extend){0};
+    attr.qp = qp;
+
+    rc = ibv_query_qp_extend(ext_ctx, &attr, IBV_QP_ATTR_EXTEND_HYROCE_FEATURE);
+    if (rc < 0) {
+        fprintf(stderr, "Failed to query QP HYROCE feature, rc=%d\n", rc);
+        return rc;
+    }
+    printf("RoCE feature type=%d, version=%d, sack_enable=%d\n",
+           attr.feature.type, attr.feature.version, attr.feature.sack_enable);
+
+    /* 2. Query load balancing mode */
+    attr = (struct ibv_qp_attr_extend){0};
+    attr.qp = qp;
+
+    rc = ibv_query_qp_extend(ext_ctx, &attr, IBV_QP_ATTR_EXTEND_LB_MODE);
+    if (rc < 0) {
+        fprintf(stderr, "Failed to query QP lb_mode, rc=%d\n", rc);
+        return rc;
+    }
+    printf("LB mode=%d\n", attr.lb_mode);
+
+    return 0;
+}
+```
+
 ## South-bound Interfaces (Driver Call)
 
 ### verbs_register_driver_extend
@@ -557,6 +914,67 @@ Device supported extension capabilities, returned by extension query interface. 
 | IBV_EXTEND_NDR | 1 | Device supports NDR (NPUDirect Rdma) capability. |
 | IBV_EXTEND_NDA | 2 | Device supports NDA (NPUDirect Async) capability. |
 
+### IBV\_EXTEND\_DRIVER\_VERSION (Driver Operations Interface Version)
+
+The version number for the driver-implemented ops set, indicating the range of feature interfaces the driver supports, ensuring compatibility between upper-layer library and underlying driver. Each version corresponds to a fixed set of function pointers. Version number must be incremented when new interfaces are added.
+
+| Variable | Value | Description |
+| ---- | ---- | ---- |
+| IBV\_EXTEND\_DRIVER\_VERSION\_UNUSED | 0 | Version not set, not allowed. |
+| IBV\_EXTEND\_DRIVER\_VERSION\_V1 | 1 | Version 1: Supports NPU Direct Async basic interfaces (create\_qp, create\_cq, create\_srq, destroy\_qp, destroy\_cq, destroy\_srq, query\_device). |
+| IBV\_EXTEND\_DRIVER\_VERSION\_V2 | 2 | Version 2: All V1 interfaces + Hyper RoCE interfaces (modify\_qp, query\_qp). |
+
+Version compatibility rules:
+
+1. Drivers must set the correct version number during registration and initialize all function pointers supported by that version.
+2. The upper-layer library checks driver version before calling interfaces; returns \-EOPNOTSUPP on version mismatch.
+3. Old drivers can run on newer extension libraries, but can only use interfaces supported by the old driver.
+4. New drivers cannot run on older extension libraries; the extension library needs to be upgraded.
+
+### ibv\_hyroce\_feature\_type
+
+Advanced RoCE feature type enum, used to specify the advanced RoCE protocol type used by QP.
+
+| Variable | Value | Description |
+| ---- | ---- | ---- |
+| IBV\_HYPER\_TYPE\_RoCEv2 | 0 | Standard RoCEv2 protocol. |
+| IBV\_HYPER\_TYPE\_VEROCE | 1 | RoCE for VelcEngine. |
+| IBV\_HYPER\_TYPE\_HCROCE | 2 | RoCE for HuaweiComputing. |
+
+### ibv\_hyroce\_feature\_version
+
+Advanced RoCE feature version enum, used to specify the advanced RoCE protocol version used by QP.
+
+| Variable | Value | Description |
+| ---- | ---- | ---- |
+| IBV\_HYPER\_VERSION\_UNUSE | 0 | Not used. |
+| IBV\_HYPER\_VERSION\_P1 | 1 | Version P1. |
+| IBV\_HYPER\_VERSION\_P2 | 2 | Version P2. |
+| IBV\_HYPER\_VERSION\_P3 | 3 | Version P3. |
+
+### ibv\_lb\_mode
+
+Load balancing mode enum, used to specify QP load balancing strategy.
+
+| Variable | Value | Description |
+| ---- | ---- | ---- |
+| IBV\_LB\_MODE\_DEFAULT | 0 | Network card default load balancing mode. |
+| IBV\_LB\_MODE\_MP | 1 | Multi-Path mode. |
+| IBV\_LB\_MODE\_AR | 2 | Adaptive-Routing mode. |
+
+### ibv\_qp\_attr\_extend\_mask
+
+QP attribute extension mask enum, used to specify which attributes need to be configured or queried by ibv\_modify\_qp\_extend and ibv\_query\_qp\_extend.
+
+| Variable | Value | Description |
+| ---- | ---- | ---- |
+| IBV\_QP\_ATTR\_EXTEND\_UDP\_SRC\_PORT | 1 << 0 | Source UDP port number. |
+| IBV\_QP\_ATTR\_EXTEND\_HYROCE\_FEATURE | 1 << 1 | Advanced RoCE feature. |
+| IBV\_QP\_ATTR\_EXTEND\_LB\_MODE | 1 << 2 | Load balancing mode. |
+| IBV\_QP\_ATTR\_EXTEND\_MP\_CONFIG | 1 << 3 | Multi-Path configuration. |
+| IBV\_QP\_ATTR\_EXTEND\_AR\_CONFIG | 1 << 4 | Adaptive-Routing configuration. |
+| IBV\_QP\_ATTR\_EXTEND\_SACK\_CONFIG | 1 << 5 | Selective Ack configuration. |
+
 ## Core Data Structures
 
 ### doorbell_map_desc
@@ -595,6 +1013,90 @@ This series of functions is used for memory allocation and mapping during QP/CQ/
 | `int (*memcpy_s)(void *dst, size_t dst_max_size, void *src, size_t size, uint32_t direct)` | Used by underlying driver for memory copy operation. Memory must be address allocated by alloc callback function. | <li>dst: Copy destination address, can be host-side allocated address or alloc allocated address.</li><li>dst_max_size: For copy safety, need to pass maximum length of dst destination address.</li><li>src: Copy source address, can be host-side allocated address or alloc allocated address.</li><li>size: Actual copy length in src, unit bytes, cannot exceed src allocated length.</li><li>direct: Copy direction, type is enum memcpy_direction.</li> | Returns 0 on success, returns negative error code on failure. |
 | `void *(*db_mmap)(struct doorbell_map_desc *desc)` | Used for doorbell mapping logic, usually implements logic of mapping host doorbell address to NPU memory.<br>Implementation constraint: Must support repeated mapping of same desc, that is, multiple mappings of same desc address must return same mapping address. | desc: doorbell resource mapping descriptor. | Mapped address pointer, returns null on failure. |
 | `int (*db_unmap)(void *ptr, struct doorbell_map_desc *desc)` | Used for unmapping logic. | <li>ptr: Address mapped by calling db_mmap interface.</li><li>desc: Input desc during db_mmap.</li> | Returns 0 on success, returns negative error code on failure. |
+
+### ibv\_context\_extend\_ops
+
+South-bound interface, implemented by device driver, called by ibv\_extend module. The structure contains a version field indicating the driver version, and function pointers for each feature module.
+
+| Member | Description |
+| ---- | ---- |
+| `int version` | Driver operations interface version number, type is enum IBV\_EXTEND\_DRIVER\_VERSION. Driver must set the correct version number, used for version compatibility check. |
+| `struct ibv_qp_extend *(*create_qp)(...)` | Extended QP creation interface, V1 version supported, driver implemented, null means not supported. |
+| `struct ibv_cq_extend *(*create_cq)(...)` | Extended CQ creation interface, V1 version supported, driver implemented, null means not supported. |
+| `struct ibv_srq_extend *(*create_srq)(...)` | Extended SRQ creation interface, V1 version supported, driver implemented, null means not supported. |
+| `int (*destroy_qp)(struct ibv_qp_extend *qp_extend)` | Extended QP destruction interface, V1 version supported, driver implemented, null means not supported. |
+| `int (*destroy_cq)(struct ibv_cq_extend *cq_extend)` | Extended CQ destruction interface, V1 version supported, driver implemented, null means not supported. |
+| `int (*destroy_srq)(struct ibv_srq_extend *srq_extend)` | Extended SRQ destruction interface, V1 version supported, driver implemented, null means not supported. |
+| `int (*query_device)(struct ibv_context *context, struct ibv_device_attr_extend *ext_dev_attr)` | Query device extension attributes interface, V1 version supported, driver implemented, null means not supported. |
+| `int (*modify_qp)(struct ibv_context *context, struct ibv_qp_attr_extend *attr, int attr_mask)` | QP extended attribute modification interface, V2 version new addition, driver implemented, null means not supported. |
+| `int (*query_qp)(struct ibv_context *context, struct ibv_qp_attr_extend *attr, int attr_mask)` | QP extended attribute query interface, V2 version new addition, driver implemented, null means not supported. |
+
+### verbs\_device\_extend\_ops
+
+Device-level extension operation interface, implemented by device driver. The name field must match the standard driver, used for matching the standard driver during extension driver registration.
+
+| Member | Description |
+| ---- | ---- |
+| `const char *name` | Used to match original driver ibv_context, must be consistent with the name defined in verbs_device_ops by the driver vendor, cannot be null. |
+| `struct ibv_context_extend *(*alloc_context)(struct ibv_context *context)` | Used to allocate extension context, driver implemented, null means not supported. |
+| `void (*free_context)(struct ibv_context_extend *context)` | Used to release extension context, driver implemented, null means not supported. |
+
+### ibv\_hyroce\_feature
+
+Advanced RoCE feature configuration structure, used in ibv\_modify\_qp\_extend and ibv\_query\_qp\_extend operations to configure or query QP's advanced RoCE features.
+
+| Variable | Type | Description |
+| ---- | ---- | ---- |
+| type | uint8\_t | Advanced RoCE type, value range: enum ibv\_hyroce\_feature\_type. |
+| version | uint8\_t | Advanced RoCE version, value range: enum ibv\_hyroce\_feature\_version. |
+| sack\_enable | uint8\_t | Selective retransmission switch, 0-off, 1-on. |
+| resv | uint8\_t[] | Reserved field, for future feature extension. |
+
+### ibv\_mp\_config
+
+Multi-Path configuration parameter structure, used to configure QP multi-path load balancing parameters.
+
+| Variable | Type | Description |
+| ---- | ---- | ---- |
+| flowlet\_pkg\_num | uint32\_t | Number of packets per sub-flow (flowlet), used for flow splitting. |
+| path\_num | uint32\_t | Number of multi-paths. |
+| interval | uint32\_t | UDP port number increment interval, used to distinguish different paths. |
+| path\_rr\_enable | uint32\_t | Whether path supports round-robin (RR) network port selection, 0-not supported, 1-supported. |
+| resv | uint32\_t[] | Reserved field, for future extension. |
+
+### ibv\_ar\_config
+
+Adaptive Routing configuration structure, used to configure QP adaptive routing parameters.
+
+| Variable | Type | Description |
+| ---- | ---- | ---- |
+| port\_rr\_enable | uint32\_t | Whether to enable network port side round-robin (RR) per-packet function, 0-off, 1-on. |
+| resv | uint32\_t[] | Reserved field, for future extension. |
+
+### ibv\_sack\_config
+
+Selective Acknowledgment (SACK) configuration structure, used to configure QP selective retransmission parameters.
+
+| Variable | Type | Description |
+| ---- | ---- | ---- |
+| srp\_range | uint32\_t | TX (send) direction maximum retransmission packet count. |
+| oor\_range | uint32\_t | RX (receive) direction out-of-order retransmission window packet count. |
+| resv | uint32\_t[] | Reserved field, for future extension. |
+
+### ibv\_qp\_attr\_extend
+
+QP extended attribute structure, used for ibv\_modify\_qp\_extend and ibv\_query\_qp\_extend operations. When using, specify which attribute fields need to be configured or queried through attr\_mask.
+
+| Variable | Type | Description |
+| ---- | ---- | ---- |
+| qp | struct ibv\_qp * | QP handle, pointing to the QP object to be modified or queried. |
+| udp\_src\_port | uint32\_t | Source UDP port number. |
+| feature | struct ibv\_hyroce\_feature | Advanced RoCE feature. |
+| lb\_mode | uint32\_t | Load balancing mode, value range: enum ibv\_lb\_mode. |
+| mp | struct ibv\_mp\_config | Multi-Path configuration. |
+| ar | struct ibv\_ar\_config | Adaptive Routing configuration. |
+| sack | struct ibv\_sack\_config | Selective Acknowledgment (SACK) configuration. |
+| resv | uint32\_t[] | Reserved field, for future extension. |
 
 # FAQ
 

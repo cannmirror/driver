@@ -12,9 +12,10 @@
   - [通用接口](#通用接口)
     - [ibv\_extend\_get\_version](#ibv_extend_get_version)
     - [ibv\_extend\_check\_version](#ibv_extend_check_version)
-  - [北向接口（应用层调用）](#北向接口应用层调用)
+  - [北向接口（上下文管理）](#北向接口上下文管理)
     - [ibv\_open\_extend](#ibv_open_extend)
     - [ibv\_close\_extend](#ibv_close_extend)
+  - [北向接口（NPU Direct Async）](#北向接口npu-direct-async)
     - [ibv\_query\_device\_extend](#ibv_query_device_extend)
     - [ibv\_create\_qp\_extend](#ibv_create_qp_extend)
     - [ibv\_create\_cq\_extend](#ibv_create_cq_extend)
@@ -22,15 +23,23 @@
     - [ibv\_destroy\_qp\_extend](#ibv_destroy_qp_extend)
     - [ibv\_destroy\_cq\_extend](#ibv_destroy_cq_extend)
     - [ibv\_destroy\_srq\_extend](#ibv_destroy_srq_extend)
+  - [北向接口（Hyper RoCE）](#北向接口hyper-roce)
+    - [ibv\_modify\_qp\_extend](#ibv_modify_qp_extend)
+    - [ibv\_query\_qp\_extend](#ibv_query_qp_extend)
   - [南向接口（驱动调用）](#南向接口驱动调用)
     - [verbs\_register\_driver\_extend](#verbs_register_driver_extend)
 - [关键结构体说明](#关键结构体说明)
   - [枚举类型定义](#枚举类型定义)
+    - [IBV\_EXTEND\_DRIVER\_VERSION（驱动操作接口版本）](#ibv_extend_driver_version驱动操作接口版本)
     - [queue\_buf\_dma\_mode](#queue_buf_dma_mode)
     - [doorbell\_map\_mode](#doorbell_map_mode)
     - [memcpy\_direction](#memcpy_direction)
     - [ibv\_qp\_init\_cap](#ibv_qp_init_cap)
     - [ibv\_extend\_device\_cap](#ibv_extend_device_cap)
+    - [ibv\_hyroce\_feature\_type](#ibv_hyroce_feature_type)
+    - [ibv\_hyroce\_feature\_version](#ibv_hyroce_feature_version)
+    - [ibv\_lb\_mode](#ibv_lb_mode)
+    - [ibv\_qp\_attr\_extend\_mask](#ibv_qp_attr_extend_mask)
   - [核心数据结构](#核心数据结构)
     - [doorbell\_map\_desc](#doorbell_map_desc)
     - [ibv\_extend\_ops](#ibv_extend_ops)
@@ -46,6 +55,11 @@
     - [ibv\_context\_extend](#ibv_context_extend)
     - [ibv\_context\_extend\_ops](#ibv_context_extend_ops)
     - [verbs\_device\_extend\_ops](#verbs_device_extend_ops)
+    - [ibv\_hyroce\_feature](#ibv_hyroce_feature)
+    - [ibv\_mp\_config](#ibv_mp_config)
+    - [ibv\_ar\_config](#ibv_ar_config)
+    - [ibv\_sack\_config](#ibv_sack_config)
+    - [ibv\_qp\_attr\_extend](#ibv_qp_attr_extend)
 - [FAQ](#faq)
   - [调用ibv\_open\_extend接口初始化扩展库报错](#调用ibv_open_extend接口初始化扩展库报错)
 
@@ -53,7 +67,7 @@
 
 ## 组件介绍
 
-ibverbs\_extend（下文简称ibv\_extend）组件是标准RDMA verbs接口的扩展，专门用于支持NDA（NPUDirect Async）场景下的直驱RDMA通信。
+ibverbs\_extend（下文简称ibv\_extend）组件是标准RDMA verbs接口的扩展库，为上层通信组件提供标准ibverbs之外的扩展能力。
 
 ibv\_extend组件通过统一接口实现南北向解耦，如下图所示：
 
@@ -62,20 +76,40 @@ ibv\_extend组件通过统一接口实现南北向解耦，如下图所示：
 
 ![ibv_extend逻辑框图](figures/ibv_extend逻辑框图.png)
 
+ibv\_extend组件当前支持以下两大独立特性模块：
+
+- **NPU Direct Async（NDA）**：支持在NPU侧管理RDMA队列资源，实现NPU与网卡之间的直接数据传输
+- **Hyper RoCE**：支持高阶RoCE特性配置，包括负载均衡、选择性重传等高级网络通信功能
+
+两个特性模块相互独立，不互相依赖：
+
+- 仅需NDA特性的场景，驱动只需实现V1版本接口即可
+- 仅需Hyper RoCE特性的场景，驱动需实现V2版本接口（V2包含V1的基础接口）
+- 两个特性可同时使用，通过`ibv_open_extend`创建的同一扩展上下文即可访问全部功能
+
 ibv\_extend组件提供了以下核心功能：
 
 - 扩展驱动程序的动态加载和管理
-- 扩展QP/CQ/SRQ的创建和销毁
+- 扩展QP/CQ/SRQ的创建和销毁（NDA特性）
+- QP扩展属性的修改和查询（Hyper RoCE特性）
 - 支持南北向通过回调函数机制自定义硬件操作
 
 ## 应用场景
 
-本组件主要应用于以下场景：
+### NPU Direct Async场景
 
 - NPU与RDMA网卡之间的直接数据传输。
 - 绕过Host CPU、NPU与RDMA网卡的控制面直驱。
 
-![应用场景图](figures/应用场景.png)
+![NDA应用场景图](figures/NDA应用场景.png)
+
+### Hyper RoCE场景
+
+- 需要高阶RoCE协议特性的网络通信。
+- 多路径负载均衡和自适应路由优化。
+- 提升网络可靠性的选择性重传。
+
+![Hyper RoCE应用场景图](figures/Hyper_RoCE应用场景.png)
 
 # 安装
 
@@ -385,7 +419,7 @@ if (ret == 0) {
 }
 ```
 
-## 北向接口（应用层调用）
+## 北向接口（上下文管理）
 
 ### ibv\_open\_extend
 
@@ -474,6 +508,8 @@ if (ret != 0) {
     fprintf(stderr, "Failed to close extend context: %d\n", ret);
 }
 ```
+
+## 北向接口（NPU Direct Async）
 
 ### ibv\_query\_device\_extend
 
@@ -751,6 +787,140 @@ if (ret != 0) {
 }
 ```
 
+## 北向接口（Hyper RoCE）
+
+Hyper RoCE接口用于配置和查询QP的高阶RoCE扩展属性，包括高阶RoCE特性类型、负载均衡模式、选择性重传参数等。调用以下接口需要驱动版本 >= IBV\_EXTEND\_DRIVER\_VERSION\_V2。
+
+### ibv\_modify\_qp\_extend
+
+**函数原型**
+
+`int ibv_modify_qp_extend(struct ibv_context_extend *context, struct ibv_qp_attr_extend *attr, int attr_mask)`
+
+**功能**
+
+修改QP的扩展属性，支持配置高阶RoCE特性、负载均衡模式、多路径参数、选择性重传参数等。
+
+**参数**
+
+- context：扩展上下文，必须使用ibv\_open\_extend创建，非空。
+- attr：QP扩展属性结构体，包含需要修改的属性值，非空。
+- attr_mask：属性掩码，指定需要修改的属性，为ibv\_qp\_attr\_extend\_mask枚举类型的位组合。
+
+**返回值**
+
+- 0：成功。
+- EINVAL：参数无效。
+- EOPNOTSUPP：驱动版本不支持（需要 >= V2）或对应接口未实现。
+
+**使用示例**
+
+ibv\_modify\_qp\_extend每次调用应只修改一类属性（通过attr\_mask指定），不同类属性需分开多次调用。示例展示了一个典型的Hyper RoCE初始化流程：先配置高阶RoCE特性，再配置负载均衡模式，最后配置源UDP端口。
+
+```c
+int init_hyper_roce(struct ibv_context_extend *ext_ctx, struct ibv_qp *qp)
+{
+    int rc;
+    struct ibv_qp_attr_extend attr;
+
+    /* 1. 配置高阶RoCE特性（类型、版本、SACK开关） */
+    attr = (struct ibv_qp_attr_extend){0};
+    attr.qp = qp;
+    attr.feature.type = IBV_HYPER_TYPE_VEROCE;
+    attr.feature.version = IBV_HYPER_VERSION_P2;
+    attr.feature.sack_enable = 1;  /* 开启选择性重传 */
+
+    rc = ibv_modify_qp_extend(ext_ctx, &attr, IBV_QP_ATTR_EXTEND_HYROCE_FEATURE);
+    if (rc < 0) {
+        fprintf(stderr, "Failed to modify QP with HYROCE feature, rc=%d\n", rc);
+        return rc;
+    }
+
+    /* 2. 配置负载均衡模式 */
+    attr = (struct ibv_qp_attr_extend){0};
+    attr.qp = qp;
+    attr.lb_mode = IBV_LB_MODE_MP;  /* Multi-Path多路径模式 */
+
+    rc = ibv_modify_qp_extend(ext_ctx, &attr, IBV_QP_ATTR_EXTEND_LB_MODE);
+    if (rc < 0) {
+        fprintf(stderr, "Failed to modify QP with lb_mode, rc=%d\n", rc);
+        return rc;
+    }
+
+    /* 3. 配置源UDP端口 */
+    attr = (struct ibv_qp_attr_extend){0};
+    attr.qp = qp;
+    attr.udp_src_port = 12345;
+
+    rc = ibv_modify_qp_extend(ext_ctx, &attr, IBV_QP_ATTR_EXTEND_UDP_SRC_PORT);
+    if (rc < 0) {
+        fprintf(stderr, "Failed to modify QP with UDP src port, rc=%d\n", rc);
+        return rc;
+    }
+
+    return 0;
+}
+```
+
+### ibv\_query\_qp\_extend
+
+**函数原型**
+
+`int ibv_query_qp_extend(struct ibv_context_extend *context, struct ibv_qp_attr_extend *attr, int attr_mask)`
+
+**功能**
+
+查询QP的扩展属性，支持查询高阶RoCE特性、负载均衡模式、多路径参数、选择性重传参数等。
+
+**参数**
+
+- context：扩展上下文，必须使用ibv\_open\_extend创建，非空。
+- attr：QP扩展属性结构体，用于返回查询结果，需提前设置qp字段指向目标QP，非空。
+- attr_mask：属性掩码，指定需要查询的属性，为ibv\_qp\_attr\_extend\_mask枚举类型的位组合。
+
+**返回值**
+
+- 0：成功。
+- EINVAL：参数无效。
+- EOPNOTSUPP：驱动版本不支持（需要 >= V2）或对应接口未实现。
+
+**使用示例**
+
+ibv\_query\_qp\_extend每次调用应只查询一类属性（通过attr\_mask指定），不同类属性需分开多次调用。查询前需先清零attr结构体并设置qp字段。
+
+```c
+int query_hyper_roce_info(struct ibv_context_extend *ext_ctx, struct ibv_qp *qp)
+{
+    int rc;
+    struct ibv_qp_attr_extend attr;
+
+    /* 1. 查询高阶RoCE特性 */
+    attr = (struct ibv_qp_attr_extend){0};
+    attr.qp = qp;
+
+    rc = ibv_query_qp_extend(ext_ctx, &attr, IBV_QP_ATTR_EXTEND_HYROCE_FEATURE);
+    if (rc < 0) {
+        fprintf(stderr, "Failed to query QP HYROCE feature, rc=%d\n", rc);
+        return rc;
+    }
+    printf("RoCE feature type=%d, version=%d, sack_enable=%d\n",
+           attr.feature.type, attr.feature.version, attr.feature.sack_enable);
+
+    /* 2. 查询负载均衡模式 */
+    attr = (struct ibv_qp_attr_extend){0};
+    attr.qp = qp;
+
+    rc = ibv_query_qp_extend(ext_ctx, &attr, IBV_QP_ATTR_EXTEND_LB_MODE);
+    if (rc < 0) {
+        fprintf(stderr, "Failed to query QP lb_mode, rc=%d\n", rc);
+        return rc;
+    }
+    printf("LB mode=%d\n", attr.lb_mode);
+
+    return 0;
+}
+```
+
 ## 南向接口（驱动调用）
 
 ### verbs\_register\_driver\_extend
@@ -826,12 +996,73 @@ PROVIDER_EXTEND_DRIVER(my_driver_ops);  // 使用宏自动注册
 
 ### ibv\_extend\_device\_cap
 
-设备支持的扩展能力，由扩展query接口返回，有驱动查询当前设备是否支持NDR/NDA。
+设备支持的扩展能力，由扩展query接口返回，由驱动查询当前设备是否支持NDR/NDA。
 
 |  变量   | 值  | 说明  |
 |  ----  | ----  | ----  |
 | IBV_EXTEND_NDR  | 1 | 设备支持NDR（NPUDirect Rdma）能力。 |
 | IBV_EXTEND_NDA  | 2 | 设备支持NDA（NPUDirect Async）能力。 |
+
+### IBV\_EXTEND\_DRIVER\_VERSION（驱动操作接口版本）
+
+驱动实现的ops集合版本号，用于标识驱动支持的特性接口范围，确保上层库与底层驱动的兼容性。每个版本对应一组固定的函数指针集合，新增接口时需要递增版本号。
+
+|  变量   | 值  | 说明  |
+|  ----  | ----  | ----  |
+| IBV\_EXTEND\_DRIVER\_VERSION\_UNUSED  | 0 | 未设置版本，不允许使用。 |
+| IBV\_EXTEND\_DRIVER\_VERSION\_V1  | 1 | 版本1：支持NPU Direct Async基础接口（create\_qp、create\_cq、create\_srq、destroy\_qp、destroy\_cq、destroy\_srq、query\_device）。 |
+| IBV\_EXTEND\_DRIVER\_VERSION\_V2  | 2 | 版本2：V1全部接口 + Hyper RoCE接口（modify\_qp、query\_qp）。 |
+
+版本兼容性规则：
+
+1. 驱动注册时必须设置正确的版本号，并初始化该版本支持的所有函数指针。
+2. 上层库调用接口前会检查驱动版本，版本不匹配时返回\-EOPNOTSUPP。
+3. 老驱动可以在新扩展库上运行，但只能使用老驱动支持的接口。
+4. 新驱动不能在老扩展库上运行，需要扩展库升级支持。
+
+### ibv\_hyroce\_feature\_type
+
+高阶RoCE特性类型枚举，用于指定QP使用的高阶RoCE协议类型。
+
+|  变量   | 值  | 说明  |
+|  ----  | ----  | ----  |
+| IBV\_HYPER\_TYPE\_RoCEv2  | 0 | 标准RoCEv2协议。 |
+| IBV\_HYPER\_TYPE\_VEROCE  | 1 | RoCE for VelcEngine。 |
+| IBV\_HYPER\_TYPE\_HCROCE  | 2 | RoCE for HuaweiComputing。 |
+
+### ibv\_hyroce\_feature\_version
+
+高阶RoCE特性版本枚举，用于指定QP使用的高阶RoCE协议版本。
+
+|  变量   | 值  | 说明  |
+|  ----  | ----  | ----  |
+| IBV\_HYPER\_VERSION\_UNUSE  | 0 | 未使用。 |
+| IBV\_HYPER\_VERSION\_P1  | 1 | 版本P1。 |
+| IBV\_HYPER\_VERSION\_P2  | 2 | 版本P2。 |
+| IBV\_HYPER\_VERSION\_P3  | 3 | 版本P3。 |
+
+### ibv\_lb\_mode
+
+负载均衡模式枚举，用于指定QP的负载均衡策略。
+
+|  变量   | 值  | 说明  |
+|  ----  | ----  | ----  |
+| IBV\_LB\_MODE\_DEFAULT  | 0 | 网卡默认负载均衡模式。 |
+| IBV\_LB\_MODE\_MP  | 1 | Multi-Path多路径模式。 |
+| IBV\_LB\_MODE\_AR  | 2 | Adaptive-Routing自适应路由模式。 |
+
+### ibv\_qp\_attr\_extend\_mask
+
+QP属性扩展掩码枚举，用于指定ibv\_modify\_qp\_extend和ibv\_query\_qp\_extend需要配置或查询的属性。
+
+|  变量   | 值  | 说明  |
+|  ----  | ----  | ----  |
+| IBV\_QP\_ATTR\_EXTEND\_UDP\_SRC\_PORT  | 1 << 0 | 源UDP端口号。 |
+| IBV\_QP\_ATTR\_EXTEND\_HYROCE\_FEATURE  | 1 << 1 | 高阶RoCE特性。 |
+| IBV\_QP\_ATTR\_EXTEND\_LB\_MODE  | 1 << 2 | 负载均衡模式。 |
+| IBV\_QP\_ATTR\_EXTEND\_MP\_CONFIG  | 1 << 3 | Multi-Path多路径模式配置。 |
+| IBV\_QP\_ATTR\_EXTEND\_AR\_CONFIG  | 1 << 4 | Adaptive-Routing多路径模式配置。 |
+| IBV\_QP\_ATTR\_EXTEND\_SACK\_CONFIG  | 1 << 5 | Selective Ack选择性重传参数配置。 |
 
 ## 核心数据结构
 
@@ -985,17 +1216,20 @@ SRQ创建成功后返回给应用的扩展信息，该内存为驱动分配的ho
 
 ### ibv\_context\_extend\_ops
 
-南向接口，由设备驱动实现，供ibv\_extend模块调用。
+南向接口，由设备驱动实现，供ibv\_extend模块调用。结构体包含version字段标识驱动版本，以及各特性模块的函数指针。
 
-|  回调函数指针   | 说明  |
+|  成员   | 说明  |
 |  ----  | ----  |
-| `struct ibv_qp_extend *(*create_qp)(struct ibv_context *context, struct ibv_qp_init_attr_extend *qp_init_attr)`  | 扩展QP创建接口，驱动实现，空表示不支持。 |
-| `struct ibv_cq_extend *(*create_cq)(struct ibv_context *context, struct ibv_cq_init_attr_extend *cq_init_attr)`  | 扩展CQ创建接口，驱动实现，空表示不支持。 |
-| `struct ibv_srq_extend *(*create_srq)(struct ibv_context *context, struct ibv_srq_init_attr_extend *srq_init_attr)`  | 扩展SRQ创建接口，驱动实现，空表示不支持。 |
-| `int (*destroy_qp)(struct ibv_qp_extend *qp_extend)`  | 扩展QP销毁接口，驱动实现，空表示不支持。 |
-| `int (*destroy_cq)(struct ibv_cq_extend *cq_extend)`  | 扩展CQ销毁接口，驱动实现，空表示不支持。 |
-| `int (*destroy_srq)(struct ibv_srq_extend *srq_extend)`  | 扩展SRQ销毁接口，驱动实现，空表示不支持。 |
-| `int (*query_device)(struct ibv_context *context, struct ibv_device_attr_extend *ext_dev_attr)`  | 查询设备扩展属性接口，驱动实现，空表示不支持。 |
+| `int version`  | 驱动操作接口版本号，类型为enum IBV\_EXTEND\_DRIVER\_VERSION。驱动必须设置正确的版本号，用于版本兼容性检查。 |
+| `struct ibv_qp_extend *(*create_qp)(...)`  | 扩展QP创建接口，V1版本支持，驱动实现，空表示不支持。 |
+| `struct ibv_cq_extend *(*create_cq)(...)`  | 扩展CQ创建接口，V1版本支持，驱动实现，空表示不支持。 |
+| `struct ibv_srq_extend *(*create_srq)(...)`  | 扩展SRQ创建接口，V1版本支持，驱动实现，空表示不支持。 |
+| `int (*destroy_qp)(struct ibv_qp_extend *qp_extend)`  | 扩展QP销毁接口，V1版本支持，驱动实现，空表示不支持。 |
+| `int (*destroy_cq)(struct ibv_cq_extend *cq_extend)`  | 扩展CQ销毁接口，V1版本支持，驱动实现，空表示不支持。 |
+| `int (*destroy_srq)(struct ibv_srq_extend *srq_extend)`  | 扩展SRQ销毁接口，V1版本支持，驱动实现，空表示不支持。 |
+| `int (*query_device)(struct ibv_context *context, struct ibv_device_attr_extend *ext_dev_attr)`  | 查询设备扩展属性接口，V1版本支持，驱动实现，空表示不支持。 |
+| `int (*modify_qp)(struct ibv_context *context, struct ibv_qp_attr_extend *attr, int attr_mask)`  | QP扩展属性修改接口，V2版本新增，驱动实现，空表示不支持。 |
+| `int (*query_qp)(struct ibv_context *context, struct ibv_qp_attr_extend *attr, int attr_mask)`  | QP扩展属性查询接口，V2版本新增，驱动实现，空表示不支持。 |
 
 ### verbs\_device\_extend\_ops
 
@@ -1006,6 +1240,63 @@ SRQ创建成功后返回给应用的扩展信息，该内存为驱动分配的ho
 | `const char *name`  | 用于匹配驱动原本ibv_context，必须与驱动厂商中verbs_device_ops定义的name一致，不能为空。 |
 | `struct ibv_context_extend *(*alloc_context)(struct ibv_context *context)`  | 用于分配扩展上下文，驱动实现，空表示不支持。 |
 | `void (*free_context)(struct ibv_context_extend *context)`  | 用于释放扩展上下文，驱动实现，空表示不支持。 |
+
+### ibv\_hyroce\_feature
+
+高阶RoCE特性配置结构体，用于ibv\_modify\_qp\_extend和ibv\_query\_qp\_extend操作中配置或查询QP的高阶RoCE特性。
+
+|  变量   | 类型  | 说明  |
+|  ----  | ----  | ----  |
+| type  | uint8\_t | 高阶RoCE类型，取值范围：enum ibv\_hyroce\_feature\_type。 |
+| version  | uint8\_t | 高阶RoCE版本，取值范围：enum ibv\_hyroce\_feature\_version。 |
+| sack\_enable  | uint8\_t | 选择性重传开关，0-关闭，1-开启。 |
+| resv  | uint8\_t[] | 预留字段，用于未来扩展特性。 |
+
+### ibv\_mp\_config
+
+多路径（Multi-Path）配置参数结构体，用于配置QP的多路径负载均衡参数。
+
+|  变量   | 类型  | 说明  |
+|  ----  | ----  | ----  |
+| flowlet\_pkg\_num  | uint32\_t | 每个子流（flowlet）的包个数，用于流切分。 |
+| path\_num  | uint32\_t | 多路径的路径个数。 |
+| interval  | uint32\_t | UDP端口号递增间隔，用于区分不同路径。 |
+| path\_rr\_enable  | uint32\_t | 路径是否支持轮询（RR）选择网络端口，0-不支持，1-支持。 |
+| resv  | uint32\_t[] | 预留字段，用于未来扩展。 |
+
+### ibv\_ar\_config
+
+自适应路由（Adaptive Routing）配置结构体，用于配置QP的自适应路由参数。
+
+|  变量   | 类型  | 说明  |
+|  ----  | ----  | ----  |
+| port\_rr\_enable  | uint32\_t | 是否开启网口侧端口轮询（RR）逐包功能，0-关闭，1-开启。 |
+| resv  | uint32\_t[] | 预留字段，用于未来扩展。 |
+
+### ibv\_sack\_config
+
+选择性重传（SACK - Selective Ack）配置结构体，用于配置QP的选择性重传参数。
+
+|  变量   | 类型  | 说明  |
+|  ----  | ----  | ----  |
+| srp\_range  | uint32\_t | TX（发送）方向最大重传报文个数。 |
+| oor\_range  | uint32\_t | RX（接收）方向乱序重传窗口的报文个数。 |
+| resv  | uint32\_t[] | 预留字段，用于未来扩展。 |
+
+### ibv\_qp\_attr\_extend
+
+QP扩展属性结构体，用于ibv\_modify\_qp\_extend和ibv\_query\_qp\_extend操作。使用时需通过attr\_mask指定需要配置或查询的属性域。
+
+|  变量   | 类型  | 说明  |
+|  ----  | ----  | ----  |
+| qp  | struct ibv\_qp * | QP句柄，指向需要修改或查询的QP对象。 |
+| udp\_src\_port  | uint32\_t | 源UDP端口号。 |
+| feature  | struct ibv\_hyroce\_feature | 高阶RoCE特性。 |
+| lb\_mode  | uint32\_t | 负载均衡模式，取值范围：enum ibv\_lb\_mode。 |
+| mp  | struct ibv\_mp\_config | 多路径（Multi-Path）配置。 |
+| ar  | struct ibv\_ar\_config | 自适应路由（Adaptive Routing）配置。 |
+| sack  | struct ibv\_sack\_config | 选择性重传（SACK）配置。 |
+| resv  | uint32\_t[] | 预留字段，用于未来扩展。 |
 
 # FAQ
 
