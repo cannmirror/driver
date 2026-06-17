@@ -8,7 +8,7 @@
 
 ```
 docs/zh/nda/ibv_extend/
-├── NDA IBV_EXTEND 扩展库开发指南   # 开发指南
+├── NDA IBV_EXTEND Extension Library Development Guide   # 开发指南
 src/custom/nda/ibv_extend/
 ├── ibv_extend.h          # 公共头文件，定义扩展接口和数据结构
 ├── ibv_extend.c          # 核心实现文件
@@ -20,4 +20,4 @@ src/custom/nda/ibv_extend/
 
 ## 开发指南
 
-> 详细的安装、使用和API说明请参考 [NDA IBV_EXTEND 扩展库开发指南](../../../../docs/zh/nda/ibv_extend/NDA_IBV_EXTEND_Extension_Library_Development_Guide.md)
+> 详细的安装、使用和API说明请参考 [NDA IBV_EXTEND Extension Library Development Guide](../../../../docs/zh/nda/ibv_extend/NDA_IBV_EXTEND_Extension_Library_Development_Guide.md)
