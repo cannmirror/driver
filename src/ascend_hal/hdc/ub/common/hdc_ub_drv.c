@@ -408,9 +408,9 @@ void hdc_ub_session_free(struct hdc_ub_session *session)
     }
 
     session->psession_ptr = NULL;
-    (void)mmMutexLock(&g_hdcConfig.list_lock);
-    drv_user_list_del(&session->node);
-    (void)mmMutexUnLock(&g_hdcConfig.list_lock);
+    (void)mmMutexLock(&g_hdcConfig.session_lock[session->lock_idx]);
+    g_hdcConfig.info_list[session->lock_idx].session = NULL;
+    (void)mmMutexUnLock(&g_hdcConfig.session_lock[session->lock_idx]);
 
     node = session->epoll_event_node;
     // Maximum wait time: 1s
@@ -528,7 +528,6 @@ STATIC signed int hdc_ub_session_pre_init(struct hdc_session *p_session, struct 
     session->unique_val = unique_val;
     session->user_va = mem_info->user_va;
     session->data_notify_wait = false;
-    INIT_LIST_HEAD(&session->node);
 
     (void)memset_s(user_va, HDCDRV_UB_MEM_POOL_LEN, 0, HDCDRV_UB_MEM_POOL_LEN);
 
@@ -538,11 +537,9 @@ STATIC signed int hdc_ub_session_pre_init(struct hdc_session *p_session, struct 
     session->recv_eventfd = -1;
     session->psession_ptr = p_session;
     hdc_ub_init_dfx_info(&session->dbg_stat);
-    (void)mmMutexLock(&g_hdcConfig.list_lock);
-    drv_user_list_add_tail(&session->node, &g_hdcConfig.session_list);
-    (void)mmMutexUnLock(&g_hdcConfig.list_lock);
-    g_hdcConfig.status_list[idx].status = HDC_SESSION_STATUS_CONN;
-    g_hdcConfig.status_list[idx].unique_val = unique_val;
+    g_hdcConfig.info_list[idx].session = session;
+    g_hdcConfig.info_list[idx].status = HDC_SESSION_STATUS_CONN;
+    g_hdcConfig.info_list[idx].unique_val = unique_val;
     return DRV_ERROR_NONE;
 }
 
@@ -555,13 +552,11 @@ void hdc_ub_session_uninit(struct hdc_session *p_session, int dev_id, int sessio
         return;
     }
 
-    g_hdcConfig.status_list[idx].status = HDC_SESSION_STATUS_IDLE;
-    g_hdcConfig.status_list[idx].unique_val = 0;
+    g_hdcConfig.info_list[idx].status = HDC_SESSION_STATUS_IDLE;
+    g_hdcConfig.info_list[idx].unique_val = 0;
 
     session = p_session->ub_session;
-    (void)mmMutexLock(&g_hdcConfig.list_lock);
-    drv_user_list_del(&session->node);
-    (void)mmMutexUnLock(&g_hdcConfig.list_lock);
+    g_hdcConfig.info_list[idx].session = NULL;
 
     free(session->epoll_event_node);
     free(session);
@@ -1256,11 +1251,9 @@ void hdc_ub_init(struct hdcConfig *hdc_config)
         hdc_config->urma_attr[i] = NULL;
     }
 
-    INIT_LIST_HEAD(&hdc_config->session_list);
     for (i = 0; i < HDC_MAX_UB_DEV_CNT * HDCDRV_UB_SINGLE_DEV_MAX_SESSION; i++) {
         (void)mmMutexInit(&hdc_config->session_lock[i]);
     }
-    (void)mmMutexInit(&hdc_config->list_lock);
     hdc_config->f_pid = getpid();
 
     hdc_ub_notiy_init(hdc_config);
@@ -1828,6 +1821,13 @@ STATIC void hdc_fill_close_record(struct hdc_time_record_for_close *close_record
     close_record->service_type = session->service_type;
 }
 
+STATIC void hdc_fill_id_into_cmd(union hdcdrv_cmd* hdc_cmd, struct hdc_ub_session *session)
+{
+    hdc_cmd->close.session = (int)session->local_id;
+    hdc_cmd->close.remote_session = session->remote_id;
+    hdc_cmd->close.dev_id = (int)session->dev_id;
+}
+
 int hdc_ub_session_close_handle(struct hdc_session *p_session, unsigned int dev_id, union hdcdrv_cmd* hdc_cmd,
     int close_flag, struct hdc_time_record_for_close *record)
 {
@@ -1850,17 +1850,21 @@ int hdc_ub_session_close_handle(struct hdc_session *p_session, unsigned int dev_
     idx = hdc_get_lock_index((int)dev_id, fd);
     (void)mmMutexLock(&g_hdcConfig.session_lock[idx]);
     session = p_session->ub_session;
-    if ((session == NULL) || (session->status == HDC_SESSION_STATUS_IDLE)) {
+    if ((session == NULL) || (g_hdcConfig.info_list[idx].status == HDC_SESSION_STATUS_IDLE)) {
         (void)mmMutexUnLock(&g_hdcConfig.session_lock[idx]);
         record->close_type = HDCDRV_CLOSE_TYPE_NONE;
         HDC_LOG_INFO("session has been closed.(id=%d)\n", p_session->sockfd);
         return DRV_ERROR_NONE;
     }
 
+    if (close_state != HDCDRV_CLOSE_TYPE_REMOTE_CLOSED_POST) {
+        hdc_fill_id_into_cmd(hdc_cmd, session);
+    }
+
     hdc_fill_close_record(record, session);
     last_status = session->status;
     session->status = HDC_SESSION_STATUS_IDLE;    // The session status is set to IDLE
-    g_hdcConfig.status_list[idx].status = HDC_SESSION_STATUS_IDLE;
+    g_hdcConfig.info_list[idx].status = HDC_SESSION_STATUS_IDLE;
     peer_pid = session->peer_create_pid;
     service_type = session->service_type;
 
@@ -1926,9 +1930,6 @@ signed int hdc_ub_session_close(unsigned int dev_id, struct hdc_session *p_sessi
     if (ub_session != NULL) {
         record.close_type = HDCDRV_CLOSE_TYPE_USER;
         hdc_cmd.close.ret = 0;
-        hdc_cmd.close.session = (int)ub_session->local_id;
-        hdc_cmd.close.remote_session = ub_session->remote_id;
-        hdc_cmd.close.dev_id = (int)ub_session->dev_id;
         hdc_cmd.close.local_close_state = close_state;
         hdc_cmd.close.remote_local_state = HDCDRV_CLOSE_TYPE_REMOTE_CLOSED_POST;
         ret = hdc_ub_session_close_handle(p_session, dev_id, &hdc_cmd, close_flag, &record);
@@ -1958,23 +1959,16 @@ signed int hdc_ub_session_close(unsigned int dev_id, struct hdc_session *p_sessi
     return ret;
 }
 
-struct hdc_ub_session *hdc_find_session_in_list(unsigned int fd, int dev_id, uint32_t unique_val)
+struct hdc_ub_session *hdc_find_session_in_list(unsigned int fd, int dev_id, uint32_t unique_val, int idx)
 {
-    struct list_head *pos = NULL;
-    struct list_head *n = NULL;
     struct hdc_ub_session *psession = NULL;
 
-    (void)mmMutexLock(&g_hdcConfig.list_lock);
-    list_for_each_safe(pos, n, &g_hdcConfig.session_list) {
-        psession = list_entry(pos, struct hdc_ub_session, node);
-        if (psession != NULL) {
-            if ((psession->local_id == fd) && (psession->dev_id == dev_id) && (psession->unique_val == unique_val)) {
-                (void)mmMutexUnLock(&g_hdcConfig.list_lock);
-                return psession;
-            }
+    psession = g_hdcConfig.info_list[idx].session;
+    if (psession != NULL) {
+        if ((psession->local_id == fd) && (psession->dev_id == dev_id) && (psession->unique_val == unique_val)) {
+            return psession;
         }
     }
-    (void)mmMutexUnLock(&g_hdcConfig.list_lock);
     return NULL;
 }
 
@@ -1985,14 +1979,18 @@ void hdc_remote_close_handle(struct hdc_remote_close_thread_para *msg_para)
     struct hdc_ub_session *session;
     struct hdc_session *p_session;
     union hdcdrv_cmd hdc_cmd;
+    int idx;
 
     HDC_LOG_INFO("hdc_remote_close_handle enter after sleep 3s.(session=%u; dev_id=%d)\n", msg_para->local_session,
         msg_para->dev_id);
     record.close_type = HDCDRV_CLOSE_TYPE_REMOTE_CLOSED_POST;
     record.remote_close = &msg_para->record;
     // before session close, judge first to avoid wait
-    session = hdc_find_session_in_list(msg_para->local_session, (int)msg_para->dev_id, msg_para->unique_val);
+    idx = hdc_get_lock_index((int)msg_para->dev_id, (int)msg_para->local_session);
+    (void)mmMutexLock(&g_hdcConfig.session_lock[idx]);
+    session = hdc_find_session_in_list(msg_para->local_session, (int)msg_para->dev_id, msg_para->unique_val, idx);
     if ((session == NULL) || (session->status == HDC_SESSION_STATUS_IDLE)) {
+        (void)mmMutexUnLock(&g_hdcConfig.session_lock[idx]);
         HDC_LOG_INFO("Can not find session, session may close.(dev_id=%d; local_session=%u; remote_session=%u)\n",
             msg_para->dev_id, msg_para->local_session, msg_para->remote_session);
         return;
@@ -2000,11 +1998,13 @@ void hdc_remote_close_handle(struct hdc_remote_close_thread_para *msg_para)
 
     p_session = session->psession_ptr;
     if ((p_session == NULL) || (p_session->magic != HDC_MAGIC_WORD)) {
+        (void)mmMutexUnLock(&g_hdcConfig.session_lock[idx]);
         HDC_LOG_ERR("Parameter psession_magic error.(dev_id=%d; session_id=%d)\n",
             msg_para->dev_id, msg_para->local_session);
         return;
     }
 
+    (void)mmMutexUnLock(&g_hdcConfig.session_lock[idx]);
     // Ioctl close
     hdc_cmd.close.session = (int)msg_para->local_session;
     hdc_cmd.close.remote_session = msg_para->remote_session;
@@ -2079,17 +2079,20 @@ drvError_t hdc_remote_close_proc(void *msg, uint32_t dev_id)
     }
 
     HDC_LOG_INFO("hdc_remote_close_proc enter.(session=%u; dev_id=%u)\n", msg_para->close_msg.remote_session, dev_id);
+    idx = hdc_get_lock_index((int)dev_id, (int)msg_para->close_msg.remote_session);
+    (void)mmMutexLock(&g_hdcConfig.session_lock[idx]);
+
     // before session close, judge first to avoid wait
-    session = hdc_find_session_in_list(msg_para->close_msg.remote_session, (int)dev_id, msg_para->close_msg.unique_val);
+    session = hdc_find_session_in_list(msg_para->close_msg.remote_session, (int)dev_id,
+        msg_para->close_msg.unique_val, idx);
     if ((session == NULL) || (session->status == HDC_SESSION_STATUS_IDLE)) {
+        (void)mmMutexUnLock(&g_hdcConfig.session_lock[idx]);
         HDC_LOG_INFO("Can not find session, session may close.(local_session=%u, remote_session=%u)\n",
             msg_para->close_msg.remote_session, msg_para->close_msg.local_session);
         // session has closed, no need to do other things, return success
         return 0;
     }
 
-    idx = hdc_get_lock_index((int)dev_id, (int)msg_para->close_msg.remote_session);
-    (void)mmMutexLock(&g_hdcConfig.session_lock[idx]);
     if (hdc_session_alive_check((int)dev_id, (int)msg_para->close_msg.remote_session,
         msg_para->close_msg.unique_val) != 0) {
         // If session has closed, no need to do other operation
@@ -2244,7 +2247,7 @@ STATIC bool hdc_check_alive_after_poll_jfc(urma_cr_status_t cr_status, struct hd
 
 #if !defined(CFG_PLATFORM_ESL) && !defined(CFG_PLATFORM_FPGA)
     if ((cr_status == URMA_CR_REM_ACCESS_ABORT_ERR) && (tx_rx_flag == HDC_UB_TX)) {
-        HDC_LOG_EVENT("remote session has closed. (type=%d; status=%d; jfc_id=%u; l_id=%u; "
+        HDC_RUN_LOG_INFO("remote session has closed. (type=%d; status=%d; jfc_id=%u; l_id=%u; "
             "r_id=%u; dev_id=%d; session_status=%d; service_type=\"%s\")\n",
             tx_rx_flag, cr_status, hdc_get_jfc_id_by_type(&session->jetty_info, tx_rx_flag), session->local_id,
             session->remote_id, session->dev_id, session_status, hdc_get_sevice_str(session->service_type));
@@ -2298,8 +2301,8 @@ int hdc_poll_jfc(hdc_urma_jfc_t *hdc_jfc, urma_cr_t *cr, struct hdc_ub_session *
             hdc_jfc_dbg_fill(tx_rx_flag, session, HDC_URMA_POLL_FAIL_BY_REM_ACESS_ABORT);
             ret = HDC_TIMEOUT_RETRY;
         } else if ((cr->status == URMA_CR_ACK_TIMEOUT_ERR) && (tx_rx_flag == HDC_UB_TX)) {
-            HDC_LOG_WARN("retransmission exceeds the maximum number of times. (type=%d; cnt=%d; jfc_id=%u; l_id=%u; "
-                "r_id=%u; dev_id=%d; service_type=\"%s\")\n",
+            HDC_RUN_LOG_INFO("retransmission exceeds the maximum number of times. (type=%d; cnt=%d; jfc_id=%u; "
+                "l_id=%u; r_id=%u; dev_id=%d; service_type=\"%s\")\n",
                 tx_rx_flag, cnt, hdc_get_jfc_id_by_type(&session->jetty_info, tx_rx_flag), session->local_id,
                 session->remote_id, session->dev_id, hdc_get_sevice_str(service_type));
             hdc_jfc_dbg_fill(tx_rx_flag, session, HDC_URMA_POLL_FAIL_BY_REM_ACESS_ABORT);
@@ -2439,7 +2442,7 @@ STATIC int hdc_jfc_process(struct hdc_ub_session *session, struct hdc_wait_retry
     // for send, must wait for jfc cqe come back, so timeout is -1
     cnt = urma_wait_jfc(ctx->jfc_send.jfce, 1, -1, &ev_jfc);
     if (cnt != 1 || ctx->jfc_send.jfc != ev_jfc) {
-        HDC_LOG_WARN("Wait jfc has problem.(cnt=%d; jfc_id=%u; l_id=%u; r_id=%u; dev_id=%d; "
+        HDC_LOG_ERR("Wait jfc has problem.(cnt=%d; jfc_id=%u; l_id=%u; r_id=%u; dev_id=%d; "
             "service_type=\"%s\")\n", cnt, hdc_get_jfc_id_by_type(&session->jetty_info, HDC_UB_TX), session->local_id, session->remote_id,
             session->dev_id, hdc_get_sevice_str(type));
         hdc_jfc_dbg_fill(HDC_UB_TX, session, HDC_URMA_WAIT_FAIL);
@@ -2483,14 +2486,7 @@ send_poll_error:
         }
     }
 
-    if (ret == HDC_TIMEOUT_RETRY) {
-        usleep(1000);
-        wait_info->timeout_retry_cnt++;
-        if (wait_info->timeout_retry_cnt % 1000 == 0) {
-            HDC_LOG_DEBUG("start retry.(retry_time=%d; l_id=%u; r_id=%u; dev_id=%d)\n",
-                wait_info->timeout_retry_cnt, session->local_id, session->remote_id, session->dev_id);
-        }
-    } else if (ret != -HDCDRV_SESSION_HAS_CLOSED) {
+    if (ret != -HDCDRV_SESSION_HAS_CLOSED && ret != HDC_TIMEOUT_RETRY) {
         HDC_LOG_ERR("hdc_poll_jfc_wait has problem.(dev_id=%d; session_id=%d; wait_flag=%d; wait_timeout=%d; "
             "remain_wait_time=%lu; ret=%d; timeout_retry=%d; non_block_retry=%d)\n",
             session->dev_id, session->local_id, wait_info->wait, wait_info->wait_time, wait_info->timeout, ret,
@@ -2549,92 +2545,91 @@ STATIC int hdc_rebuild_jfs(struct hdc_ub_session *session, hdc_ub_context_t *ctx
     return ret;
 }
 
-/* total send cost time = wait alloc mem + post jfs(wait jfs idle) + wait jfc, user's para timeout not include mem */
-STATIC int hdc_post_urma_send_wr(struct hdc_ub_session *session, struct drvHdcMsgBuf *buf_list, signed int wait,
-    unsigned int timeout, struct hdc_time_record_for_single_send *send_record)
+STATIC int hdc_init_jfs_wr(struct hdc_ub_session* session, struct hdc_ub_send_info* send_info,
+    struct hdc_wait_retry_info* wait_info, struct hdc_time_record_for_single_send* send_record)
 {
-    urma_jfs_wr_t wr = {0};
-    uint32_t seg_id;
-    int ret;
-    void *user_data = buf_list->pBuf;
-    uint32_t user_len = (uint32_t)buf_list->len;
-    struct hdc_wait_retry_info wait_info = {0};
-    urma_jfs_wr_t *bad_wr = NULL;
-    urma_sge_t src;
+    uint32_t user_len = (uint32_t)send_info->buf_list->len;
+    void *user_data = send_info->buf_list->pBuf;
     hdc_ub_context_t *ctx = session->ctx;
+    int ret;
 
     hdc_get_time_record(&send_record->ub_send_start, &send_record->fail_times);
     wmb();
-    hdc_init_wait_and_retry_info(wait, (unsigned long)timeout, &wait_info);
+
     if (user_len > HDC_MEM_BLOCK_SIZE) {
         HDC_LOG_ERR("len exceed max segment(max_segment=%d, user_len=%u).\n", HDC_MEM_BLOCK_SIZE, user_len);
         session->dbg_stat.tx_fail_hdc++;
         return DRV_ERROR_INVALID_VALUE;
     }
 
-    ret = hdc_get_jfs_tseg(session, &ctx->jfs, &seg_id, wait_info.wait_time);
+    ret = hdc_get_jfs_tseg(session, &ctx->jfs, &send_info->seg_id, wait_info->wait_time);
     if (ret != 0) {
         session->dbg_stat.tx_fail_hdc++;
         HDC_LOG_ERR("Alloc jfs tseg failed. (dev_id=%u;session_id=%u;wait_time=%u;ret=%d)\n",
-            ctx->devid, ctx->session_fd, wait_info.wait_time, ret);
+            ctx->devid, ctx->session_fd, wait_info->wait_time, ret);
         return ret;
     }
     wmb();
     hdc_get_time_record(&send_record->find_idle_block, &send_record->fail_times);
 
-    src.len = user_len;
-    ret = hdc_fill_jfs_wr(user_data, &src, &wr, seg_id, session);
+    send_info->src.len = user_len;
+    ret = hdc_fill_jfs_wr(user_data, &send_info->src, &send_info->wr, send_info->seg_id, session);
     if (ret != 0) {
         session->dbg_stat.tx_fail_hdc++;
-        hdc_put_jfs_tseg(ctx, &ctx->jfs, seg_id);
+        hdc_put_jfs_tseg(ctx, &ctx->jfs, send_info->seg_id);
         return ret;
     }
     wmb();
     hdc_get_time_record(&send_record->fill_jfs_wr, &send_record->fail_times);
-timeout_send_again:
-    ret = hdc_update_timeout_and_status(&wait_info, session);
+    return 0;
+}
+
+STATIC int hdc_post_jfs_wr(struct hdc_ub_session* session, struct hdc_ub_send_info* send_info,
+    struct hdc_wait_retry_info* wait_info, struct hdc_time_record_for_single_send* send_record)
+{
+    hdc_ub_context_t *ctx = session->ctx;
+    urma_jfs_wr_t *bad_wr = NULL;
+    int ret;
+
+    ret = hdc_update_timeout_and_status(wait_info, session);
     if (ret != 0) {
         goto send_result_process;
     }
 
     wmb();
     hdc_get_time_record(&send_record->post_jfs_wr_start, &send_record->fail_times);
-    ret = urma_post_jfs_wr(ctx->jfs.jfs, &wr, &bad_wr);
+    ret = urma_post_jfs_wr(ctx->jfs.jfs, &send_info->wr, &bad_wr);
     if (ret != 0) {
         session->dbg_stat.tx_fail_ub++;
         HDC_LOG_ERR("Failed to post jfs send wr(ret=%d; jfs_id=%u; l_id=%u; r_id=%u; dev_id=%u)\n",
             ret, ctx->jfs.jfs->jfs_id.id, session->local_id, session->remote_id, session->dev_id);
-        hdc_put_jfs_tseg(ctx, &ctx->jfs, seg_id);
+        hdc_put_jfs_tseg(ctx, &ctx->jfs, send_info->seg_id);
         return ret;
     }
 
-    ret = hdc_jfc_process(session, &wait_info, send_record);
+    ret = hdc_jfc_process(session, wait_info, send_record);
     if (ret == HDC_TIMEOUT_RETRY) {
-        goto timeout_send_again;
-    } else if (ret == HDC_TIMEOUT_REBUILD) {
-        goto send_result_process;
+        return ret;
     }
 
 send_result_process:
-    hdc_put_jfs_tseg(ctx, &ctx->jfs, seg_id);
+    hdc_put_jfs_tseg(ctx, &ctx->jfs, send_info->seg_id);
     wmb();
     if (ret == 0) {
         session->dbg_stat.tx++;
-        session->dbg_stat.tx_bytes += user_len;
+        session->dbg_stat.tx_bytes += send_info->buf_list->len;
     } else if (ret == HDC_TIMEOUT_REBUILD) {
         ret = hdc_rebuild_jfs(session, ctx);
-        if (ret != 0) {
-            return ret;
+        if (ret == 0) {
+            ret = DRV_ERROR_TRANS_LINK_ABNORMAL;
         }
-        return DRV_ERROR_TRANS_LINK_ABNORMAL;
     } else {
         if (ret != -HDCDRV_SESSION_HAS_CLOSED) {
             HDC_LOG_ERR("Failed to get cqe for send.(wait_flag=%d; retry_cnt=%d; l_id=%u; r_id=%u; dev_id=%d; ret=%d)\n",
-                wait_info.wait, wait_info.timeout_retry_cnt, session->local_id, session->remote_id, session->dev_id, ret);
+                wait_info->wait, wait_info->timeout_retry_cnt, session->local_id, session->remote_id, session->dev_id, ret);
         }
     }
 
-    hdc_get_time_record(&send_record->ub_send_end, &send_record->fail_times);
     return ret;
 }
 
@@ -2729,10 +2724,12 @@ STATIC int hdc_recv_ub_msg_to_rx_buf(hdc_ub_context_t *ctx, int timeout, signed 
 signed int hdc_ub_send(const struct hdc_session *p_session, struct drvHdcMsg *p_msg, signed int wait,
     unsigned int timeout)
 {
-    int ret;
+    int ret, idx;
     struct hdc_ub_session *session;
     hdc_ub_context_t *ctx;
     struct hdc_time_record_for_single_send send_record = {0};
+    struct hdc_wait_retry_info wait_info = {0};
+    struct hdc_ub_send_info send_info = {0};
 
     ret = drv_hdc_ub_session_para_check(p_session);
     if (ret != DRV_ERROR_NONE) {
@@ -2741,7 +2738,14 @@ signed int hdc_ub_send(const struct hdc_session *p_session, struct drvHdcMsg *p_
         return ret;
     }
 
+    idx = hdc_get_lock_index(p_session->device_id, p_session->sockfd);
     session = p_session->ub_session;
+    (void)mmMutexLock(&g_hdcConfig.session_lock[idx]);
+    if (!hdc_check_session_valid_by_idx(&g_hdcConfig, idx, session)) {
+        HDC_LOG_WARN("Session has been closed. (dev_id=%u; sockfd=%d)\n", p_session->device_id, p_session->sockfd);
+        (void)mmMutexUnLock(&g_hdcConfig.session_lock[idx]);
+        return -HDCDRV_SESSION_HAS_CLOSED;
+    }
     ctx = session->ctx;
     (void)mmMutexLock(&(ctx->mutex_jfs));
 
@@ -2749,23 +2753,55 @@ signed int hdc_ub_send(const struct hdc_session *p_session, struct drvHdcMsg *p_
         ret = hdc_rebuild_jfs(session, ctx);
         if (ret != 0) {
             (void)mmMutexUnLock(&(ctx->mutex_jfs));
+            (void)mmMutexUnLock(&g_hdcConfig.session_lock[idx]);
             HDC_LOG_ERR("The JFS of the input parameter session is invalid, rebuild failed."
                 "(ret=%d; dev_id=%u; sockfd=%d)\n", ret, p_session->device_id, p_session->sockfd);
             return HDCDRV_ERR;
         }
     }
-
-    ret = hdc_post_urma_send_wr(session, &(p_msg->bufList[0]), wait, timeout, &send_record);
+    hdc_init_wait_and_retry_info(wait, (unsigned long)timeout, &wait_info);
+    send_info.buf_list = &(p_msg->bufList[0]);
+    ret = hdc_init_jfs_wr(session, &send_info, &wait_info, &send_record);
     if (ret != 0) {
         (void)mmMutexUnLock(&(ctx->mutex_jfs));
+        (void)mmMutexUnLock(&g_hdcConfig.session_lock[idx]);
+        if (ret != -HDCDRV_SESSION_HAS_CLOSED) {
+            HDC_LOG_ERR("Failed to init wr.(ret=%d; l_id=%u; r_id=%u; dev_id=%d)\n",
+                ret, session->local_id, session->remote_id, session->dev_id);
+        }
+        return ret;
+    }
+
+post_jfs_wr_again:
+    ret = hdc_post_jfs_wr(session, &send_info, &wait_info, &send_record);
+    if (ret == HDC_TIMEOUT_RETRY) {
+        (void)mmMutexUnLock(&(ctx->mutex_jfs));
+        (void)mmMutexUnLock(&g_hdcConfig.session_lock[idx]);
+        usleep(1000);
+        wait_info.timeout_retry_cnt++;
+        (void)mmMutexLock(&g_hdcConfig.session_lock[idx]);
+        if (!hdc_check_session_valid_by_idx(&g_hdcConfig, idx, session)) {
+            HDC_LOG_WARN("Session has been closed. (dev_id=%u; sockfd=%d)\n", p_session->device_id, p_session->sockfd);
+            (void)mmMutexUnLock(&g_hdcConfig.session_lock[idx]);
+            return -HDCDRV_SESSION_HAS_CLOSED;
+        } else {
+            (void)mmMutexLock(&(ctx->mutex_jfs));
+            goto post_jfs_wr_again;
+        }
+    } else if (ret != 0) {
+        (void)mmMutexUnLock(&(ctx->mutex_jfs));
+        (void)mmMutexUnLock(&g_hdcConfig.session_lock[idx]);
         if (ret != -HDCDRV_SESSION_HAS_CLOSED) {
             HDC_LOG_ERR("Failed to send wr.(ret=%d; l_id=%u; r_id=%u; dev_id=%d)\n",
                 ret, session->local_id, session->remote_id, session->dev_id);
         }
         return ret;
     }
+
+    hdc_get_time_record(&send_record.ub_send_end, &send_record.fail_times);
     hdc_get_send_time_cost(&send_record, session);
     (void)mmMutexUnLock(&(ctx->mutex_jfs));
+    (void)mmMutexUnLock(&g_hdcConfig.session_lock[idx]);
     return ret;
 }
 

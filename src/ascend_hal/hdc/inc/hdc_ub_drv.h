@@ -59,9 +59,9 @@ struct hdc_query_info {
 #define HDC_UB_VALID 1
 #define HDC_UB_INVALID 0
 
-#define HDC_TIMEOUT_RETRY (-1)
-#define HDC_NON_BLOCK_RETRY (-2)
-#define HDC_TIMEOUT_REBUILD (-3)
+#define HDC_TIMEOUT_RETRY (-0xffff0001)
+#define HDC_NON_BLOCK_RETRY (-0xffff0002)
+#define HDC_TIMEOUT_REBUILD (-0xffff0003)
 #define HDC_RETRY_MAX_TIME 5
 
 #ifdef CFG_FEATURE_SUPPORT_UB
@@ -162,6 +162,13 @@ struct hdc_ub_epoll_node {
     void *session;
 };
 
+struct hdc_ub_send_info {
+    struct drvHdcMsgBuf* buf_list;
+    uint32_t seg_id;
+    urma_sge_t src;
+    urma_jfs_wr_t wr;
+};
+
 static inline void hdc_pack_jetty_info(hdc_ub_context_t *ctx, hdc_jfr_id_info_t *info)
 {
     info->eid = ctx->urma_ctx->eid;
@@ -203,6 +210,14 @@ static inline bool hdc_service_type_vaild(int service_type)
         return false;
     }
 
+    return true;
+}
+
+static inline bool hdc_check_session_valid_by_idx(struct hdcConfig* hdcConfig, int idx, struct hdc_ub_session* session)
+{
+    if (hdcConfig->info_list[idx].status == HDC_SESSION_STATUS_IDLE || hdcConfig->info_list[idx].session != session) {
+        return false;
+    }
     return true;
 }
 
@@ -440,7 +455,8 @@ void __attribute__((weak)) hdc_link_event_pre_uninit(signed int dev_id, bool is_
 const char* __attribute__((weak)) hdc_get_sevice_str(int service_type);
 drvError_t __attribute__((weak)) hdc_remote_close_proc(void *msg, uint32_t dev_id);
 int __attribute__((weak)) hdc_get_lock_index(int dev_id, int session_id);
-struct hdc_ub_session* __attribute__((weak)) hdc_find_session_in_list(unsigned int fd, int dev_id, uint32_t unique_val);
+struct hdc_ub_session* __attribute__((weak)) hdc_find_session_in_list(unsigned int fd, int dev_id,
+    uint32_t unique_val, int idx);
 int __attribute__((weak)) hdc_ub_get_session_dfx(unsigned int dev_id, struct hdc_ub_session *session);
 void __attribute__((weak)) hdc_fill_query_info(struct hdc_query_info *info, int pid, int query_type, int grp_type_flag);
 int __attribute__((weak)) hdc_event_query_gid(unsigned int dev_id, unsigned int *grp_id, struct hdc_query_info *info);

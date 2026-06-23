@@ -93,7 +93,8 @@ drvError_t hdc_dfx_query_event_proc(uint32_t dev_id, const void *msg, int msg_le
     idx = hdc_get_lock_index((int)dev_id, (int)dfx_msg->dfx_msg.r_session_id);
     (void)mmMutexLock(&g_hdcConfig.session_lock[idx]);
 
-    session = hdc_find_session_in_list(dfx_msg->dfx_msg.r_session_id, (int)dev_id, dfx_msg->dfx_msg.para_info.unique_val);
+    session = hdc_find_session_in_list(dfx_msg->dfx_msg.r_session_id, (int)dev_id,
+        dfx_msg->dfx_msg.para_info.unique_val, idx);
     if ((session == NULL) || (session->status == HDC_SESSION_STATUS_IDLE)) {
         HDC_LOG_WARN("Can not find session, session may close.(local_session=%u, remote_session=%u, unique_val=%u)\n",
             dfx_msg->dfx_msg.r_session_id, dfx_msg->dfx_msg.l_session_id, dfx_msg->dfx_msg.para_info.unique_val);

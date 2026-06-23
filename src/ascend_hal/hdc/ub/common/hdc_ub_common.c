@@ -140,8 +140,8 @@ int hdc_session_alive_check(int dev_id, int l_id, unsigned int unique_val)
     }
 
     idx = hdc_get_lock_index(dev_id, l_id);
-    if ((g_hdcConfig.status_list[idx].status == HDC_SESSION_STATUS_IDLE) ||
-        (g_hdcConfig.status_list[idx].unique_val != unique_val)) {
+    if ((g_hdcConfig.info_list[idx].status == HDC_SESSION_STATUS_IDLE) ||
+        (g_hdcConfig.info_list[idx].unique_val != unique_val)) {
         ret = -HDCDRV_SESSION_HAS_CLOSED;
     }
 

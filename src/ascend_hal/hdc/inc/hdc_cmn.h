@@ -344,9 +344,10 @@ struct hdc_session_notify_mng {
     struct HdcSessionNotify notify;
 };
 
-struct hdc_session_status {
+struct hdc_session_base_info {
     signed char status;
     unsigned int unique_val;
+    struct hdc_ub_session *session;
 };
 
 struct hdc_time_record_for_single_send {
@@ -586,11 +587,9 @@ struct hdcConfig {
     bitmap_t tid_pool[16];
     hdc_urma_info_t *urma_attr[HDC_MAX_UB_DEV_CNT];
     mmMutex_t urma_attr_lock[HDC_MAX_UB_DEV_CNT];
-    struct list_head session_list;
     HDC_SERVER server_list[HDC_MAX_UB_DEV_CNT][HDCDRV_SUPPORT_MAX_SERVICE];
-    mmMutex_t list_lock;        // use for lock session_list
     mmMutex_t session_lock[HDC_MAX_UB_DEV_CNT * HDCDRV_UB_SINGLE_DEV_MAX_SESSION];   // used when close session
-    struct hdc_session_status status_list[HDC_MAX_UB_DEV_CNT * HDCDRV_UB_SINGLE_DEV_MAX_SESSION]; // check session status
+    struct hdc_session_base_info info_list[HDC_MAX_UB_DEV_CNT * HDCDRV_UB_SINGLE_DEV_MAX_SESSION]; // session base info
     int f_pid;
     struct hdc_session_notify_mng notify_list[HDC_SERVICE_TYPE_MAX];
 #endif
