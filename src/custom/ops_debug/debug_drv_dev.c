@@ -103,10 +103,11 @@ struct sqcq_chn_info {
 };
 
 static struct sqcq_chn_info g_sqcq_chn_info_list[DEVICE_NUM_MAX]; // phy_dev_id as index
-
+static ka_mutex_t g_sqcq_chn_info_mtx;
 static void cq_queue_info_init(void)
 {
     int i;
+    ka_task_mutex_init(&g_sqcq_chn_info_mtx);
     for (i = 0; i < DEVICE_NUM_MAX; ++i) {
         struct sqcq_chn_info *info = &g_sqcq_chn_info_list[i];
         info->enable_debug = 0;
@@ -684,8 +685,9 @@ static int debug_drv_open(ka_inode_t *a, ka_file_t *fd)
 static int debug_drv_release(ka_inode_t *a, ka_file_t *fd)
 {
     int i;
-    int ret;
+    int ret = 0;
     TD_PRINT_INFO("misc file release pid=%d\n", ka_task_get_current_pid());
+    ka_task_mutex_lock(&g_sqcq_chn_info_mtx);
     for (i = 0; i < DEVICE_NUM_MAX; ++i) {
         TD_PRINT_INFO("debugger_pid = %d\n", g_sqcq_chn_info_list[i].debugger_pid);
         if (g_sqcq_chn_info_list[i].debugger_pid == ka_task_get_current_pid()) {
@@ -704,6 +706,7 @@ static int debug_drv_release(ka_inode_t *a, ka_file_t *fd)
             break;
         }
     }
+    ka_task_mutex_unlock(&g_sqcq_chn_info_mtx);
     return ret;
 }
 
@@ -877,21 +880,23 @@ static long debug_drv_ioctl(struct file *fd, unsigned int cmd, unsigned long arg
         return ERR_DEV_ID;
     }
 
-    mutex_lock(&(g_sqcq_chn_info_list[0].mtx));
+    ka_task_mutex_lock(&g_sqcq_chn_info_mtx);
     ret = check_dev_registered(phy_devid);
-    mutex_unlock(&(g_sqcq_chn_info_list[0].mtx));
     if (ret != 0) {
+        ka_task_mutex_unlock(&g_sqcq_chn_info_mtx);
         return ret;
     }
 
     ret = check_and_create_chan(cmd, phy_devid);
     if (ret != 0) {
+        ka_task_mutex_unlock(&g_sqcq_chn_info_mtx);
         return ret;
     }
+
     ka_task_mutex_lock((ka_mutex_t *)&(g_sqcq_chn_info_list[phy_devid].mtx)); // 防止多线程调用ioctl
     ret = parse_ioctl_cmd(phy_devid, &info, cmd, &arg);
     ka_task_mutex_unlock((ka_mutex_t *)&(g_sqcq_chn_info_list[phy_devid].mtx));
-
+    ka_task_mutex_unlock(&g_sqcq_chn_info_mtx);
     return ret;
 }
 
@@ -941,7 +946,9 @@ static void ts_drv_module_exit(void)
         g_sqcq_chn_info_list[i].cq_tail = 0;
         g_sqcq_chn_info_list[i].pid = DEBUG_DEFAULT_PID;
         g_sqcq_chn_info_list[i].debugger_pid = DEBUG_DEFAULT_PID;
+        ka_task_mutex_destroy(&g_sqcq_chn_info_list[i].mtx);
     }
+    ka_task_mutex_destroy(&g_sqcq_chn_info_mtx);
     ret_s = memset_s(&g_cq_queue[0], sizeof(struct debug_cq_report) * CQ_QUEUE_DEPTH, 0,
         sizeof(struct debug_cq_report) * CQ_QUEUE_DEPTH);
     if (ret_s != EOK) {
