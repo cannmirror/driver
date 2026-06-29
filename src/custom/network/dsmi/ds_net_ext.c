@@ -18,6 +18,26 @@
 #include "hccn_comm.h"
 #include "hccn_tool.h"
 
+#ifndef UB_BANDWIDTH_T_DEFINED
+#define UB_BANDWIDTH_T_DEFINED
+struct ub_bandwidth_t {
+    unsigned int tx_bandwidth;
+    unsigned int rx_bandwidth;
+};
+#endif
+
+struct ds_port_pkt_stats_info;
+struct dsmi_credit_info;
+struct dsmi_netdev_list_info;
+struct dsmi_ip_addr;
+struct dsmi_traceroute_param;
+struct dcmi_bond_pfc_duration_info;
+struct traceroute_result;
+struct ubping_mesh_operate;
+struct ubping_mesh_info;
+struct dcmi_ub_ping_operate;
+struct ub_ping_result;
+
 int dsmi_get_qp_context(int logic_id, int port_id, unsigned int qpn, char *context)
 {
     int ret;
@@ -1009,95 +1029,125 @@ int dsmi_get_extra_statistics_info(int logic_id, int port_id, struct ds_extra_st
     return trans_data.result;
 }
 
-// int dsmi_get_ub_bandwidth(int, int, int, unsigned int, struct ub_bandwidth_t)
-// {
-//     return DRV_ERROR_NOT_SUPPORT;
-// }
+int dsmi_get_ub_bandwidth(int a, int b, int c, unsigned int d, struct ub_bandwidth_t *e)
+{
+    (void)a; (void)b; (void)c; (void)d; (void)e;
+    return DRV_ERROR_NOT_SUPPORT;
+}
 
-// int dsmi_get_port_pkt_stats_info(int, int, int, struct ds_port_pkt_stats_info *)
-// {
-//     return DRV_ERROR_NOT_SUPPORT;
-// }
+int dsmi_get_port_pkt_stats_info(int a, int b, int c, struct ds_port_pkt_stats_info *d)
+{
+    (void)a; (void)b; (void)c; (void)d;
+    return DRV_ERROR_NOT_SUPPORT;
+}
 
-// int dsmi_get_port_avail_credit_info(int, int, int, struct dsmi_credit_info *)
-// {
-//     return DRV_ERROR_NOT_SUPPORT;
-// }
+int dsmi_get_port_avail_credit_info(int a, int b, int c, struct dsmi_credit_info *d)
+{
+    (void)a; (void)b; (void)c; (void)d;
+    return DRV_ERROR_NOT_SUPPORT;
+}
 
-// int dsmi_get_device_netdev_list_info(int, struct dsmi_netdev_list_info *)
-// {
-//     return DRV_ERROR_NOT_SUPPORT;
-// }
+int dsmi_get_device_netdev_list_info(int a, struct dsmi_netdev_list_info *b)
+{
+    (void)a; (void)b;
+    return DRV_ERROR_NOT_SUPPORT;
+}
 
-// int dsmi_get_device_bond_ip_address(int, const char *, unsigned int, struct dsmi_ip_addr *, struct dsmi_ip_addr *)
-// {
-//     return DRV_ERROR_NOT_SUPPORT;
-// }
+int dsmi_get_device_bond_ip_address(int a, const char *b, unsigned int c, struct dsmi_ip_addr *d, struct dsmi_ip_addr *e)
+{
+    (void)a; (void)b; (void)c; (void)d; (void)e;
+    return DRV_ERROR_NOT_SUPPORT;
+}
 
-// int dsmi_set_device_bond_ip_address(int, const char *, unsigned int, struct dsmi_ip_addr *, struct dsmi_ip_addr *)
-// {
-//     return DRV_ERROR_NOT_SUPPORT;
-// }
+int dsmi_set_device_bond_ip_address(int a, const char *b, unsigned int c, struct dsmi_ip_addr *d, struct dsmi_ip_addr *e)
+{
+    (void)a; (void)b; (void)c; (void)d; (void)e;
+    return DRV_ERROR_NOT_SUPPORT;
+}
 
-// int dsmi_exec_bond_traceroute(int, const char *, unsigned int, struct dsmi_traceroute_param *,
-//                               struct traceroute_result *, unsigned int)
-// {
-//     return DRV_ERROR_NOT_SUPPORT;
-// }
+int dsmi_exec_bond_traceroute(int a, const char *b, unsigned int c, struct dsmi_traceroute_param *d,
+                            struct traceroute_result *e, unsigned int f)
+{
+    (void)a; (void)b; (void)c; (void)d; (void)e; (void)f;
+    return DRV_ERROR_NOT_SUPPORT;
+}
 
-// #ifndef CFG_FEATURE_UB_INFO
-// int dsmi_get_device_ub_ping_info(int, struct dcmi_ub_ping_operate *, struct ub_ping_result *)
-// {
-//     return DRV_ERROR_NOT_SUPPORT;
-// }
-// #endif
+#ifndef CFG_FEATURE_UB_INFO
+int dsmi_get_device_ub_ping_info(int a, struct dcmi_ub_ping_operate *b, struct ub_ping_result *c)
+{
+    (void)a; (void)b; (void)c;
+    return DRV_ERROR_NOT_SUPPORT;
+}
+#endif
 
-// int dsmi_get_netdev_gateway(int, const char *, unsigned int, struct dsmi_ip_addr *)
-// {
-//     return DRV_ERROR_NOT_SUPPORT;
-// }
+int dsmi_get_netdev_gateway(int a, const char *b, unsigned int c, struct dsmi_ip_addr *d)
+{
+    (void)a; (void)b; (void)c; (void)d;
+    return DRV_ERROR_NOT_SUPPORT;
+}
 
-// int dsmi_set_netdev_gateway(int, const char *, unsigned int, struct dsmi_ip_addr *)
-// {
-//     return DRV_ERROR_NOT_SUPPORT;
-// }
+int dsmi_set_netdev_gateway(int a, const char *b, unsigned int c, struct dsmi_ip_addr *d)
+{
+    (void)a; (void)b; (void)c; (void)d;
+    return DRV_ERROR_NOT_SUPPORT;
+}
 
-// int dsmi_get_device_mac_addr(int, const char *, unsigned int, char *, unsigned int)
-// {
-//     return DRV_ERROR_NOT_SUPPORT;
-// }
+int dsmi_get_device_mac_addr(int a, const char *b, unsigned int c, char *d, unsigned int e)
+{
+    (void)a; (void)b; (void)c; (void)d; (void)e;
+    return DRV_ERROR_NOT_SUPPORT;
+}
 
-// int dsmi_set_device_mac_addr(int, const char *, unsigned int, const char *, unsigned int)
-// {
-//     return DRV_ERROR_NOT_SUPPORT;
-// }
+int dsmi_set_device_mac_addr(int a, const char *b, unsigned int c, const char *d, unsigned int e)
+{
+    (void)a; (void)b; (void)c; (void)d; (void)e;
+    return DRV_ERROR_NOT_SUPPORT;
+}
 
-// int dsmi_get_netdev_pfc_duration_info(int, const char *, unsigned int, struct dcmi_bond_pfc_duration_info *)
-// {
-//     return DRV_ERROR_NOT_SUPPORT;
-// }
+int dsmi_get_netdev_mac_addr(int a, const char *b, unsigned int c, char *d, unsigned int e)
+{
+    (void)a; (void)b; (void)c; (void)d; (void)e;
+    return DRV_ERROR_NOT_SUPPORT;
+}
 
-// int dsmi_clear_netdev_pfc_duration_info(int, const char *, unsigned int)
-// {
-//     return DRV_ERROR_NOT_SUPPORT;
-// }
+int dsmi_set_netdev_mac_addr(int a, const char *b, unsigned int c, const char *d, unsigned int e)
+{
+    (void)a; (void)b; (void)c; (void)d; (void)e;
+    return DRV_ERROR_NOT_SUPPORT;
+}
 
-// int dsmi_start_ubping_mesh_proc(int, struct ubping_mesh_operate *)
-// {
-//     return DRV_ERROR_NOT_SUPPORT;
-// }
+int dsmi_get_netdev_pfc_duration_info(int a, const char *b, unsigned int c, struct dcmi_bond_pfc_duration_info *d)
+{
+    (void)a; (void)b; (void)c; (void)d;
+    return DRV_ERROR_NOT_SUPPORT;
+}
 
-// int dsmi_get_ubping_mesh_state_proc(int, unsigned int *)
-// {
-//     return DRV_ERROR_NOT_SUPPORT;
-// }
+int dsmi_clear_netdev_pfc_duration_info(int a, const char *b, unsigned int c)
+{
+    (void)a; (void)b; (void)c;
+    return DRV_ERROR_NOT_SUPPORT;
+}
 
-// int dsmi_stop_ubping_mesh_proc(int)
-// {
-//     return DRV_ERROR_NOT_SUPPORT;
-// }
+int dsmi_start_ubping_mesh_proc(int a, struct ubping_mesh_operate *b)
+{
+    (void)a; (void)b;
+    return DRV_ERROR_NOT_SUPPORT;
+}
 
-// int dsmi_get_ubping_mesh_info_proc(int, struct ubping_mesh_info *)
-// {
-//     return DRV_ERROR_NOT_SUPPORT;
-// }
+int dsmi_get_ubping_mesh_state_proc(int a, unsigned int *b)
+{
+    (void)a; (void)b;
+    return DRV_ERROR_NOT_SUPPORT;
+}
+
+int dsmi_stop_ubping_mesh_proc(int a)
+{
+    (void)a;
+    return DRV_ERROR_NOT_SUPPORT;
+}
+
+int dsmi_get_ubping_mesh_info_proc(int a, struct ubping_mesh_info *b)
+{
+    (void)a; (void)b;
+    return DRV_ERROR_NOT_SUPPORT;
+}

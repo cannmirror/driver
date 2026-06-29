@@ -589,7 +589,7 @@ int dsmi_init(void);
 
 int user_prop_check(void);
 
-int drv_get_phy_mach_flag(int device_id);
+DLLEXPORT int drv_get_phy_mach_flag(int device_id);
 
 /* DLLEXPORT is for testcase compilation */
 DLLEXPORT int dsmi_config_enable(int device_id, CONFIG_ITEM config_item, DSMI_DEVICE_TYPE device_type, int enable_flag);

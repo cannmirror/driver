@@ -8,7 +8,6 @@
  * See LICENSE in the root of the software repository for the full text of the License.
  */
 
-#include "dsmi_product_ext.h"
 #include <stdlib.h>
 #include <errno.h>
 #include <unistd.h>
@@ -1417,4 +1416,100 @@ DLLEXPORT int dsmi_get_custom_op_secverify_cert_show_info(unsigned int device_id
     (void)show_info_size;
     return DRV_ERROR_NOT_SUPPORT;
 #endif
+}
+
+struct bandwidth_t {
+    unsigned int time_interval;
+    unsigned int tx_bandwidth;
+    unsigned int rx_bandwidth;
+};
+
+DLLEXPORT int dsmi_get_bandwidth(int logic_id, int port, struct bandwidth_t *bandwidth_info)
+{
+    (void)logic_id;
+    (void)port;
+    (void)bandwidth_info;
+    return DRV_ERROR_NOT_SUPPORT;
+}
+
+DLLEXPORT int dsmi_get_ub_bandwidth(int device_id, int udie_id, int port_id,
+                        unsigned int time_interval, struct ub_bandwidth_t *bw)
+{
+    (void)device_id;
+    (void)udie_id;
+    (void)port_id;
+    (void)time_interval;
+    (void)bw;
+    return DRV_ERROR_NOT_SUPPORT;
+}
+
+DLLEXPORT int dsmi_get_netdev_mac_addr(int dev_id, const char *netdev_name, unsigned int netdev_name_len,
+                            char *mac_addr, unsigned int mac_addr_len)
+{
+    (void)dev_id;
+    (void)netdev_name;
+    (void)netdev_name_len;
+    (void)mac_addr;
+    (void)mac_addr_len;
+    return DRV_ERROR_NOT_SUPPORT;
+}
+
+DLLEXPORT int dsmi_set_netdev_mac_addr(int dev_id, const char *netdev_name, unsigned int netdev_name_len,
+                            const char *mac_addr, unsigned int mac_addr_len)
+{
+    (void)dev_id;
+    (void)netdev_name;
+    (void)netdev_name_len;
+    (void)mac_addr;
+    (void)mac_addr_len;
+    return DRV_ERROR_NOT_SUPPORT;
+}
+
+DLLEXPORT int dsmi_get_device_bond_ip_address(int dev_id, const char *netdev_name, unsigned int netdev_name_len,
+                                    struct dsmi_ip_addr *ip_address, struct dsmi_ip_addr *mask_address)
+{
+    (void)dev_id;
+    (void)netdev_name;
+    (void)netdev_name_len;
+    (void)ip_address;
+    (void)mask_address;
+    return DRV_ERROR_NOT_SUPPORT;
+}
+
+DLLEXPORT int dsmi_set_device_bond_ip_address(int dev_id, const char *netdev_name, unsigned int netdev_name_len,
+                                    struct dsmi_ip_addr *ip_address, struct dsmi_ip_addr *mask_address)
+{
+    (void)dev_id;
+    (void)netdev_name;
+    (void)netdev_name_len;
+    (void)ip_address;
+    (void)mask_address;
+    return DRV_ERROR_NOT_SUPPORT;
+}
+
+DLLEXPORT int dsmi_set_netdev_gateway(int logic_id, const char *netdev_name, unsigned int netdev_name_len,
+                            struct dsmi_ip_addr *gateway)
+{
+    (void)logic_id;
+    (void)netdev_name;
+    (void)netdev_name_len;
+    (void)gateway;
+    return DRV_ERROR_NOT_SUPPORT;
+}
+
+DLLEXPORT int dsmi_get_netdev_gateway(int logic_id, const char *netdev_name, unsigned int netdev_name_len,
+                            struct dsmi_ip_addr *gateway)
+{
+    (void)logic_id;
+    (void)netdev_name;
+    (void)netdev_name_len;
+    (void)gateway;
+    return DRV_ERROR_NOT_SUPPORT;
+}
+
+DLLEXPORT int dsmi_set_device_offline_nic_down_flag(int logic_id, int enable_flag)
+{
+    (void)logic_id;
+    (void)enable_flag;
+    return DRV_ERROR_NOT_SUPPORT;
 }

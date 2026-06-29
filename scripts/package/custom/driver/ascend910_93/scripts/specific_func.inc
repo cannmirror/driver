@@ -11,7 +11,7 @@
 occupy_space=300
 vendor_bdf="0x19e5"
 device_bdf="0xd803"
-mode_normal="asdrv_queue|asdrv_buff|ts_agent|drv_dvpp_cmdlist|ts_debug|debug_switch|npu_peermem|asdrv_trs|asdrv_esched|asdrv_trsbase|asdrv_svm|asdrv_vnic|drv_pcie_hdc_host|asdrv_dms|asdrv_fms|asdrv_vmng|ascend_soc_platform|asdrv_dpa|drv_pcie_host|asdrv_vpc|drv_vascend|asdrv_vascend_adapt|asdrv_pbl|ascend_kernel_open_adapt|drv_seclib_host"
+mode_normal="asdrv_queue|asdrv_buff|drv_dvpp_cmdlist|ts_agent|ts_debug|debug_switch|npu_peermem|asdrv_trs|asdrv_esched|asdrv_trsbase|asdrv_svm|asdrv_vnic|drv_pcie_hdc_host|asdrv_dms|asdrv_fms|asdrv_vmng|ascend_soc_platform|asdrv_dpa|drv_pcie_host|asdrv_vpc|drv_vascend|asdrv_vascend_adapt|asdrv_pbl|ascend_kernel_open_adapt|drv_seclib_host"
 mode_debug="${mode_normal}"
 mode_vnpu_host="${mode_normal}"
 mode_vnpu_docker_host="${mode_normal}"
