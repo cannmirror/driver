@@ -1,5 +1,5 @@
 ﻿/**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
  * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
  * CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
@@ -45,12 +45,12 @@ mmMsgid mmMsgOpen(mmKey_t key, INT32 msgFlag)
         return (mmMsgid)EN_ERROR;
     }
     // 打开命名管道
-    mmMsgid namedPipeId = CreateFile((LPCSTR)pipeName, GENERIC_READ | GENERIC_WRITE, 0, nullptr,
-        OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+    mmMsgid namedPipeId = CreateFile((LPCSTR)pipeName, GENERIC_READ | GENERIC_WRITE, 0, nullptr, OPEN_EXISTING,
+                                     FILE_ATTRIBUTE_NORMAL, nullptr);
     if (namedPipeId == INVALID_HANDLE_VALUE) {
         if (GetLastError() == ERROR_FILE_NOT_FOUND) { // 打开失败，说明还没有创建命名管道
             namedPipeId = CreateNamedPipe((LPCSTR)pipeName, PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED, 0, 1,
-                MMPA_PIPE_BUF_SIZE, MMPA_PIPE_BUF_SIZE, 0, nullptr);
+                                          MMPA_PIPE_BUF_SIZE, MMPA_PIPE_BUF_SIZE, 0, nullptr);
             if (namedPipeId == INVALID_HANDLE_VALUE) {
                 namedPipeId = nullptr;
                 return (mmMsgid)EN_ERROR;
@@ -81,8 +81,8 @@ mmMsgid mmMsgCreate(mmKey_t key, INT32 msgFlag)
                                         MMPA_PIPE_BUF_SIZE, MMPA_PIPE_BUF_SIZE, 0, nullptr);
     if (namedPipe == INVALID_HANDLE_VALUE) {
         if (GetLastError() == ERROR_PIPE_BUSY) { // 说明管道已经创建，打开就可以
-            namedPipe = CreateFile((LPCSTR)pipeName, GENERIC_READ | GENERIC_WRITE, 0, nullptr,
-                                   OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+            namedPipe = CreateFile((LPCSTR)pipeName, GENERIC_READ | GENERIC_WRITE, 0, nullptr, OPEN_EXISTING,
+                                   FILE_ATTRIBUTE_NORMAL, nullptr);
             if (namedPipe == INVALID_HANDLE_VALUE) {
                 namedPipe = nullptr;
                 return (mmMsgid)EN_ERROR;
@@ -159,4 +159,3 @@ INT32 mmMsgClose(mmMsgid msqid)
 }
 #endif /* __cpluscplus */
 #endif /* __cpluscplus */
-

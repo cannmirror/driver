@@ -26,7 +26,7 @@
 #include "mmpa_api.h"
 
 #ifdef __cplusplus
-#if    __cplusplus
+#if __cplusplus
 extern "C" {
 #endif /* __cpluscplus */
 #endif /* __cpluscplus */
@@ -36,7 +36,7 @@ extern "C" {
  */
 VOID mmMb(VOID)
 {
-    __asm__ __volatile__ ("" : : : "memory");
+    __asm__ __volatile__("" : : : "memory");
 }
 
 /*
@@ -66,4 +66,3 @@ VOID mmAlignFree(VOID *addr)
 }
 #endif /* __cpluscplus */
 #endif /* __cpluscplus */
-

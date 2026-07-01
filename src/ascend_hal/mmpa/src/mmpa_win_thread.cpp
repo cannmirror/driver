@@ -1,5 +1,5 @@
 ﻿/**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
  * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
  * CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
@@ -34,23 +34,21 @@ extern "C" {
 const INT32 MMPA_MAX_WAIT_TIME = 100;
 const INT32 MMPA_MIN_WAIT_TIME = 0;
 
-#define MMPA_FREE(var) \
-    do { \
+#define MMPA_FREE(var)        \
+    do {                      \
         if (var != nullptr) { \
-            free(var); \
-            var = nullptr; \
-        } \
-    } \
-    while (0)
+            free(var);        \
+            var = nullptr;    \
+        }                     \
+    } while (0)
 
 #define MMPA_CLOSE_FILE_HANDLE(var) \
-    do { \
-        if (var != nullptr) { \
+    do {                            \
+        if (var != nullptr) {       \
             (void)CloseHandle(var); \
-            var = nullptr; \
-        } \
-    } \
-    while (0)
+            var = nullptr;          \
+        }                           \
+    } while (0)
 
 /*
  * 描述:内部使用
@@ -83,7 +81,7 @@ static DWORD WINAPI LocalThreadProc(LPVOID pstArg)
  */
 INT32 mmCreateTask(mmThread *threadHandle, mmUserBlock_t *funcBlock)
 {
-    if ((threadHandle == nullptr) || (funcBlock  == nullptr) || (funcBlock->procFunc  == nullptr)) {
+    if ((threadHandle == nullptr) || (funcBlock == nullptr) || (funcBlock->procFunc == nullptr)) {
         return EN_INVALID_PARAM;
     }
 
@@ -92,7 +90,8 @@ INT32 mmCreateTask(mmThread *threadHandle, mmUserBlock_t *funcBlock)
     if (*threadHandle == nullptr) {
         return EN_ERROR;
     }
-    (void)WaitForSingleObject(*threadHandle, MMPA_MAX_WAIT_TIME); // 等待时间为100ms，确保funcBlock->procFunc线程体被执行
+    (void)WaitForSingleObject(*threadHandle,
+                              MMPA_MAX_WAIT_TIME); // 等待时间为100ms，确保funcBlock->procFunc线程体被执行
     return EN_OK;
 }
 
@@ -495,7 +494,7 @@ INT32 mmCondNotifyAll(mmCond *cond)
  * 参数:cond -- mmCond指针
  * 返回值:执行成功返回EN_OK, 执行错误返回EN_ERROR, 入参检查错误返回EN_INVALID_PARAM
  */
-INT32  mmCondDestroy(mmCond *cond)
+INT32 mmCondDestroy(mmCond *cond)
 {
     if (cond == nullptr) {
         return EN_INVALID_PARAM;
@@ -523,7 +522,7 @@ INT32 mmCreateTaskWithAttr(mmThread *threadHandle, mmUserBlock_t *funcBlock)
 INT32 mmGetProcessPrio(mmProcess pid)
 {
     if (pid == nullptr) {
-        return MMPA_PROCESS_ERROR ;
+        return MMPA_PROCESS_ERROR;
     }
 
     INT32 priority;
@@ -532,8 +531,8 @@ INT32 mmGetProcessPrio(mmProcess pid)
         return MMPA_PROCESS_ERROR;
     }
     switch (ret) {
-        case REALTIME_PRIORITY_CLASS:   // those three process priority in windows
-        case HIGH_PRIORITY_CLASS:       // compare to MMPA_MIN_NI in linux
+        case REALTIME_PRIORITY_CLASS: // those three process priority in windows
+        case HIGH_PRIORITY_CLASS:     // compare to MMPA_MIN_NI in linux
         case ABOVE_NORMAL_PRIORITY_CLASS:
             priority = MMPA_MIN_NI;
             break;
@@ -675,7 +674,7 @@ INT32 mmCreateTaskWithDetach(mmThread *threadHandle, mmUserBlock_t *funcBlock)
  *      key-线程变量存储区索引
  * 返回值:执行成功返回EN_OK, 执行错误返回EN_ERROR, 入参检查错误返回EN_INVALID_PARAM
  */
-INT32 mmTlsCreate(mmThreadKey *key, void(*destructor)(void*))
+INT32 mmTlsCreate(mmThreadKey *key, void (*destructor)(void *))
 {
     if (key == nullptr) {
         return EN_INVALID_PARAM;
@@ -890,9 +889,9 @@ INT32 mmCreateProcess(const CHAR *fileName, const mmArgvEnv *env, const CHAR *st
     SECURITY_ATTRIBUTES sa = {sizeof(SECURITY_ATTRIBUTES), nullptr, TRUE};
     HANDLE cmdOutput = nullptr;
     if (stdoutRedirectFile != nullptr) {
-        cmdOutput = CreateFile(stdoutRedirectFile,
-                               GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-                               &sa, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+        cmdOutput = CreateFile(stdoutRedirectFile, GENERIC_WRITE,
+                               FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, &sa, OPEN_ALWAYS,
+                               FILE_ATTRIBUTE_NORMAL, nullptr);
         if (cmdOutput == INVALID_HANDLE_VALUE) {
             return EN_ERROR;
         }
@@ -935,8 +934,8 @@ INT32 mmCreateProcess(const CHAR *fileName, const mmArgvEnv *env, const CHAR *st
         MMPA_FREE(environment);
         return ret;
     }
-    BOOL bRet = CreateProcess(fileName, (LPTSTR)command, nullptr, nullptr,
-    bInheritHandles, 0, (LPVOID)environment, nullptr, &si, &pi);
+    BOOL bRet = CreateProcess(fileName, (LPTSTR)command, nullptr, nullptr, bInheritHandles, 0, (LPVOID)environment,
+                              nullptr, &si, &pi);
     MMPA_CLOSE_FILE_HANDLE(cmdOutput);
     MMPA_FREE(command);
     MMPA_FREE(environment);
@@ -955,24 +954,22 @@ INT32 mmCreateProcess(const CHAR *fileName, const mmArgvEnv *env, const CHAR *st
  *       threadAttr -- 包含需要设置的线程属性类别和值
  * 返回值:执行成功返回EN_OK, 执行错误返回EN_ERROR, 入参检查错误返回EN_INVALID_PARAM
  */
-INT32 mmCreateTaskWithThreadAttr(mmThread *threadHandle,
-                                 const mmUserBlock_t *funcBlock,
-                                 const mmThreadAttr *threadAttr)
+INT32 mmCreateTaskWithThreadAttr(mmThread *threadHandle, const mmUserBlock_t *funcBlock, const mmThreadAttr *threadAttr)
 
 {
     INT32 ret = EN_OK;
     DWORD threadId;
 
-    if ((threadHandle == nullptr) || (funcBlock == nullptr) || (funcBlock->procFunc == nullptr)
-        || (threadAttr == nullptr)) {
+    if ((threadHandle == nullptr) || (funcBlock == nullptr) || (funcBlock->procFunc == nullptr) ||
+        (threadAttr == nullptr)) {
         return EN_INVALID_PARAM;
     }
     if (threadAttr->stackFlag) {
         if (threadAttr->stackSize < MMPA_THREAD_MIN_STACK_SIZE) {
             return EN_INVALID_PARAM;
         }
-        *threadHandle = CreateThread(nullptr, threadAttr->stackSize,
-                                     LocalThreadProc, (LPVOID)funcBlock, MMPA_ZERO, &threadId);
+        *threadHandle = CreateThread(nullptr, threadAttr->stackSize, LocalThreadProc, (LPVOID)funcBlock, MMPA_ZERO,
+                                     &threadId);
     } else {
         *threadHandle = CreateThread(nullptr, MMPA_ZERO, LocalThreadProc, (LPVOID)funcBlock, MMPA_ZERO, &threadId);
     }
@@ -992,4 +989,3 @@ INT32 mmCreateTaskWithThreadAttr(mmThread *threadHandle,
 }
 #endif /* __cpluscplus */
 #endif /* __cpluscplus */
-

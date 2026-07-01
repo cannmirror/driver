@@ -27,7 +27,7 @@
 #include "mmpa_api.h"
 
 #ifdef __cplusplus
-#if    __cplusplus
+#if __cplusplus
 extern "C" {
 #endif /* __cpluscplus */
 #endif /* __cpluscplus */
@@ -111,7 +111,7 @@ VOID mmSetOptArg(CHAR *mmOptArg)
  *      opts--用来指定可以处理哪些选项
  * 返回值:执行错误, 找不到选项元素, 返回EN_ERROR
  */
-INT32 mmGetOpt(INT32 argc, CHAR * const * argv, const CHAR *opts)
+INT32 mmGetOpt(INT32 argc, CHAR *const *argv, const CHAR *opts)
 {
     return getopt(argc, argv, opts);
 }
@@ -125,7 +125,7 @@ INT32 mmGetOpt(INT32 argc, CHAR * const * argv, const CHAR *opts)
  *      longIndex--表示长选项在longopts中的位置
  * 返回值:执行错误, 找不到选项元素, 返回EN_ERROR
  */
-INT32 mmGetOptLong(INT32 argc, CHAR * const * argv, const CHAR *opts, const mmStructOption *longOpts, INT32 *longIndex)
+INT32 mmGetOptLong(INT32 argc, CHAR *const *argv, const CHAR *opts, const mmStructOption *longOpts, INT32 *longIndex)
 {
     return getopt_long(argc, argv, opts, longOpts, longIndex);
 }
@@ -135,4 +135,3 @@ INT32 mmGetOptLong(INT32 argc, CHAR * const * argv, const CHAR *opts, const mmSt
 }
 #endif /* __cpluscplus */
 #endif /* __cpluscplus */
-

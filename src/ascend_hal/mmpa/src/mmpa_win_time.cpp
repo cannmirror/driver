@@ -159,4 +159,3 @@ INT32 mmLocalTimeR(const time_t *timep, struct tm *result)
 }
 #endif /* __cpluscplus */
 #endif /* __cpluscplus */
-

@@ -27,7 +27,7 @@
 #include "mmpa_api.h"
 
 #ifdef __cplusplus
-#if    __cplusplus
+#if __cplusplus
 extern "C" {
 #endif /* __cpluscplus */
 #endif /* __cpluscplus */
@@ -121,4 +121,3 @@ mmAtomicType64 mmValueSub64(mmAtomicType64 *ptr, mmAtomicType64 value)
 }
 #endif /* __cpluscplus */
 #endif /* __cpluscplus */
-

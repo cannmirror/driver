@@ -27,7 +27,7 @@
 #include "mmpa_api.h"
 
 #ifdef __cplusplus
-#if    __cplusplus
+#if __cplusplus
 extern "C" {
 #endif /* __cpluscplus */
 #endif /* __cpluscplus */
@@ -103,4 +103,3 @@ INT32 mmMsgClose(mmMsgid msqid)
 }
 #endif /* __cpluscplus */
 #endif /* __cpluscplus */
-

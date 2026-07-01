@@ -27,13 +27,13 @@
 #include "mmpa_api.h"
 
 #ifdef __cplusplus
-#if    __cplusplus
+#if __cplusplus
 extern "C" {
 #endif /* __cpluscplus */
 #endif
 
-#define MMPA_MSEC_TO_USEC                       1000
-#define MMPA_MAX_SLEEP_MILLSECOND_USING_USLEEP  1000
+#define MMPA_MSEC_TO_USEC 1000
+#define MMPA_MAX_SLEEP_MILLSECOND_USING_USLEEP 1000
 #define MMPA_MAX_SLEEP_MICROSECOND_USING_USLEEP 1000000
 
 /*
@@ -48,7 +48,7 @@ INT32 mmGetLocalTime(mmSystemTime_t *sysTimePtr)
     }
 
     struct timeval timeVal;
-    (VOID)memset_s(&timeVal, sizeof(timeVal), 0, sizeof(timeVal)); /* unsafe_function_ignore: memset */
+    (VOID) memset_s(&timeVal, sizeof(timeVal), 0, sizeof(timeVal)); /* unsafe_function_ignore: memset */
 
     INT32 ret = gettimeofday(&timeVal, NULL);
     if (ret != EN_OK) {
@@ -56,7 +56,7 @@ INT32 mmGetLocalTime(mmSystemTime_t *sysTimePtr)
     }
 
     struct tm nowTime;
-    (VOID)memset_s(&nowTime, sizeof(nowTime), 0, sizeof(nowTime)); /* unsafe_function_ignore: memset */
+    (VOID) memset_s(&nowTime, sizeof(nowTime), 0, sizeof(nowTime)); /* unsafe_function_ignore: memset */
 
     const struct tm *tmp = localtime_r(&timeVal.tv_sec, &nowTime);
     if (tmp == NULL) {
@@ -89,7 +89,7 @@ INT32 mmGetSystemTime(mmSystemTime_t *sysTimePtr)
     }
 
     struct timeval timeVal;
-    (VOID)memset_s(&timeVal, sizeof(timeVal), 0, sizeof(timeVal)); /* unsafe_function_ignore: memset */
+    (VOID) memset_s(&timeVal, sizeof(timeVal), 0, sizeof(timeVal)); /* unsafe_function_ignore: memset */
 
     INT32 ret = gettimeofday(&timeVal, NULL);
     if (ret != EN_OK) {
@@ -97,7 +97,7 @@ INT32 mmGetSystemTime(mmSystemTime_t *sysTimePtr)
     }
 
     struct tm nowTime;
-    (VOID)memset_s(&nowTime, sizeof(nowTime), 0, sizeof(nowTime)); /* unsafe_function_ignore: memset */
+    (VOID) memset_s(&nowTime, sizeof(nowTime), 0, sizeof(nowTime)); /* unsafe_function_ignore: memset */
 
     const struct tm *tmp = gmtime_r(&timeVal.tv_sec, &nowTime);
     if (tmp == NULL) {
@@ -170,7 +170,7 @@ mmTimespec mmGetTickCount(VOID)
 {
     mmTimespec rts = {0};
     struct timespec ts = {0};
-    (VOID)clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
+    (VOID) clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
     rts.tv_sec = ts.tv_sec;
     rts.tv_nsec = ts.tv_nsec;
     return rts;
@@ -209,4 +209,3 @@ INT32 mmLocalTimeR(const time_t *timep, struct tm *result)
 }
 #endif /* __cpluscplus */
 #endif /* __cpluscplus */
-

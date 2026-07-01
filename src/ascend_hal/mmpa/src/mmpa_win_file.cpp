@@ -349,8 +349,8 @@ mmProcess mmOpenFile(const CHAR *fileName, UINT32 accessFlag, mmCreateFlag fileF
     }
 
     mmProcess fd = CreateFile((LPCSTR)fileName, accessFlag,
-        FILE_SHARE_READ | FILE_SHARE_WRITE, // 默认文件对于多进程都是共享读写的
-        nullptr, (DWORD)dwCreationDisposition, dwFlagsAndAttributes, nullptr);
+                              FILE_SHARE_READ | FILE_SHARE_WRITE, // 默认文件对于多进程都是共享读写的
+                              nullptr, (DWORD)dwCreationDisposition, dwFlagsAndAttributes, nullptr);
     if (fd == INVALID_HANDLE_VALUE) {
         return (mmProcess)EN_ERROR;
     }
@@ -664,7 +664,7 @@ LONG mmLseek(INT32 fd, INT64 offset, INT32 seekFlag)
     if (fd <= MMPA_ZERO) {
         return EN_INVALID_PARAM;
     }
-    LONG  pos = _lseek(fd, offset, seekFlag); // 出错返回-1L
+    LONG pos = _lseek(fd, offset, seekFlag); // 出错返回-1L
     if (pos == -1L) {
         return EN_ERROR;
     }
@@ -931,8 +931,8 @@ INT32 mmGetFileSize(const CHAR *fileName, ULONGLONG *length)
     }
 
     HANDLE hFile = CreateFile((LPCSTR)fileName, GENERIC_READ,
-        FILE_SHARE_READ | FILE_SHARE_WRITE, // 默认文件对于多进程都是共享读写的
-        nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+                              FILE_SHARE_READ | FILE_SHARE_WRITE, // 默认文件对于多进程都是共享读写的
+                              nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
     if (hFile == INVALID_HANDLE_VALUE) {
         return EN_ERROR;
     }
@@ -964,7 +964,8 @@ INT32 mmIsDir(const CHAR *fileName)
 
 /*
  * 描述：创建或者打开共享内存文件
- * 参数：name- 要打开或者创建的共享内存文件名，linux：打开的文件都是位于/dev/shm目录的，因此name不能带路径；windows：需要带路径
+ * 参数：name-
+ * 要打开或者创建的共享内存文件名，linux：打开的文件都是位于/dev/shm目录的，因此name不能带路径；windows：需要带路径
  *       oflag：打开的文件操作属性
  *       mode：共享模式
  * 返回值：成功返回创建或者打开的文件句柄，执行错误返回EN_ERROR, 入参检查错误返回EN_INVALID_PARAM
@@ -974,13 +975,8 @@ mmFileHandle mmShmOpen(const CHAR *name, INT32 oflag, mmMode_t mode)
     if (name == NULL) {
         return (mmFileHandle)EN_INVALID_PARAM;
     }
-    mmFileHandle handle = CreateFile(name,
-                                     oflag,
-                                     FILE_SHARE_READ | FILE_SHARE_WRITE,
-                                     NULL,
-                                     OPEN_ALWAYS,
-                                     FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED,
-                                     NULL);
+    mmFileHandle handle = CreateFile(name, oflag, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_ALWAYS,
+                                     FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED, NULL);
     if (handle == INVALID_HANDLE_VALUE) {
         return (mmFileHandle)EN_ERROR;
     }
@@ -1017,20 +1013,15 @@ VOID *mmMmap(mmFd_t fd, mmSize_t size, mmOfft_t offset, mmFd_t *extra, INT32 pro
         return nullptr;
     }
     // The ">> 32" is a high-order DWORD of the file offset where the view begins
-    *extra = CreateFileMapping(fd, nullptr, PAGE_READWRITE,
-                               (DWORD) ((UINT64) size >> 32ULL),
-                               (DWORD) (size & 0xffffffff),
+    *extra = CreateFileMapping(fd, nullptr, PAGE_READWRITE, (DWORD)((UINT64)size >> 32ULL), (DWORD)(size & 0xffffffff),
                                nullptr);
     if (*extra == nullptr) {
         return nullptr;
     }
 
     // The ">> 32" is a high-order DWORD of the file offset where the view begins
-    VOID *data = MapViewOfFile(*extra,
-                               FILE_MAP_ALL_ACCESS,
-                               (DWORD) ((UINT64) offset >> 32ULL),
-                               (DWORD) (offset & 0xffffffff),
-                               size);
+    VOID *data = MapViewOfFile(*extra, FILE_MAP_ALL_ACCESS, (DWORD)((UINT64)offset >> 32ULL),
+                               (DWORD)(offset & 0xffffffff), size);
     if (data == nullptr) {
         CloseHandle(*extra);
     }
@@ -1066,4 +1057,3 @@ INT32 mmMunMap(VOID *data, mmSize_t size, mmFd_t *extra)
 }
 #endif /* __cpluscplus */
 #endif /* __cpluscplus */
-

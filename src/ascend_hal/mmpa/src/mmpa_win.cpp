@@ -1,5 +1,5 @@
 ﻿/**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
  * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
  * CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
@@ -52,40 +52,24 @@ typedef enum {
     MMPA_OS_VERSION_WINDOWS_8_1,
     MMPA_OS_VERSION_WINDOWS_SERVER_2016,
     MMPA_OS_VERSION_WINDOWS_10
-}MMPA_OS_VERSION_WINDOWS_TYPE;
+} MMPA_OS_VERSION_WINDOWS_TYPE;
 
 // windows 操作系统列表
 CHAR g_winOps[][MMPA_MIN_OS_VERSION_SIZE] = {
-    "Windows 2000",
-    "Windows XP",
-    "Windows XP SP1",
-    "Windows XP SP2",
-    "Windows Server 2003",
-    "Windows Home Server",
-    "Windows Vista",
-    "Windows Server 2008",
-    "Windows Server 2008 R2",
-    "Windows 7",
-    "Windows Server 2012",
-    "Windows 8",
-    "Windows Server 2012 R2",
-    "Windows 8.1",
-    "Windows Server 2016",
-    "Windows 10"
-};
+    "Windows 2000",           "Windows XP",          "Windows XP SP1",      "Windows XP SP2",
+    "Windows Server 2003",    "Windows Home Server", "Windows Vista",       "Windows Server 2008",
+    "Windows Server 2008 R2", "Windows 7",           "Windows Server 2012", "Windows 8",
+    "Windows Server 2012 R2", "Windows 8.1",         "Windows Server 2016", "Windows 10"};
 
 // 操作系统架构表
 CHAR g_arch[MMPA_MAX_PROCESSOR_ARCHITECTURE_COUNT][MMPA_MIN_OS_VERSION_SIZE] = {
     "x86",  // 0
     "MIPS", // 1
-    "Alpha ",
-    "PowerPC",
-    "",
+    "Alpha ", "PowerPC", "",
     "ARM",  // 5
     "ia64", // 6
-    "",
-    "",
-    "x64",  // 9
+    "",       "",
+    "x64", // 9
 };
 
 /*
@@ -132,7 +116,7 @@ INT32 mmSemInit(mmSem_t *sem, UINT32 value)
         return EN_INVALID_PARAM;
     }
     *sem = CreateSemaphore(nullptr, static_cast<LONG>(value),
-        static_cast<LONG>(value) + MMPA_ONE_THOUSAND * MMPA_ONE_THOUSAND, nullptr);
+                           static_cast<LONG>(value) + MMPA_ONE_THOUSAND * MMPA_ONE_THOUSAND, nullptr);
     if (*sem == nullptr) {
         return EN_ERROR;
     }
@@ -195,8 +179,8 @@ INT32 mmSemDestroy(mmSem_t *sem)
 
 /*
  * 描述：调用fork（）产生子进程，然后从子进程中调用shell来执行参数command的指令。
- * 参数： command--参数是一个指向以 NULL 结束的 shell 命令字符串的指针。这行命令将被传到 bin/sh 并使用-c 标志，shell 将执行这个命令
- *        type--参数只能是读或者写中的一种，得到的返回值（标准 I/O 流）也具有和 type 相应的只读或只写类型。
+ * 参数： command--参数是一个指向以 NULL 结束的 shell 命令字符串的指针。这行命令将被传到 bin/sh 并使用-c 标志，shell
+ * 将执行这个命令 type--参数只能是读或者写中的一种，得到的返回值（标准 I/O 流）也具有和 type 相应的只读或只写类型。
  * 返回值：若成功则返回文件指针，否则返回NULL, 错误原因存于mmGetErrorCode中
  */
 FILE *mmPopen(CHAR *command, CHAR *type)
@@ -347,11 +331,7 @@ mmSsize_t mmSocketSend(mmSockHandle sockFd, VOID *sendBuf, INT32 sendLen, INT32 
  *       tolen--addr所指地址的长度
  * 返回值：执行成功返回实际发送的buf长度, 执行错误返回EN_ERROR, 入参检查错误返回EN_INVALID_PARAM
  */
-INT32 mmSocketSendTo(mmSockHandle sockFd,
-                     VOID *sendMsg,
-                     INT32 sendLen,
-                     UINT32 sendFlag,
-                     const mmSockAddr* addr,
+INT32 mmSocketSendTo(mmSockHandle sockFd, VOID *sendMsg, INT32 sendLen, UINT32 sendFlag, const mmSockAddr *addr,
                      INT32 tolen)
 {
     if ((sockFd < MMPA_ZERO) || (sendMsg == NULL) || (sendLen <= MMPA_ZERO) || (addr == NULL) || (tolen <= MMPA_ZERO)) {
@@ -396,11 +376,7 @@ mmSsize_t mmSocketRecv(mmSockHandle sockFd, VOID *recvBuf, INT32 recvLen, INT32 
  *       tolen--addr所指地址的长度
  * 返回值：执行成功返回实际发送的buf长度, 执行错误返回EN_ERROR, 入参检查错误返回EN_INVALID_PARAM
  */
-mmSsize_t mmSocketRecvFrom(mmSockHandle sockFd,
-                           VOID *recvBuf,
-                           mmSize recvLen,
-                           UINT32 recvFlag,
-                           mmSockAddr* addr,
+mmSsize_t mmSocketRecvFrom(mmSockHandle sockFd, VOID *recvBuf, mmSize recvLen, UINT32 recvFlag, mmSockAddr *addr,
                            mmSocklen_t *FromLen)
 {
     if ((sockFd < MMPA_ZERO) || (recvBuf == NULL) || (recvLen <= MMPA_ZERO) || (addr == NULL) || (FromLen == NULL)) {
@@ -495,8 +471,8 @@ INT32 mmCreateAndSetTimer(mmTimer *timerHandle, mmUserBlock_t *timerBlock, UINT 
         return EN_ERROR;
     }
 
-    BOOL ret = CreateTimerQueueTimer(&(timerHandle->timerHandle), timerHandle->timerQueue,
-        mmTimerCallBack, timerBlock, milliSecond, period, WT_EXECUTEDEFAULT);
+    BOOL ret = CreateTimerQueueTimer(&(timerHandle->timerHandle), timerHandle->timerQueue, mmTimerCallBack, timerBlock,
+                                     milliSecond, period, WT_EXECUTEDEFAULT);
     if (!ret) {
         (void)DeleteTimerQueue(timerHandle->timerQueue);
         return EN_ERROR;
@@ -595,8 +571,8 @@ INT32 mmInetAton(const CHAR *addrStr, mmInAddr *addr)
  */
 INT32 mmCreateNamedPipe(mmPipeHandle pipeHandle[], CHAR *pipeName[], INT32 waitMode)
 {
-    HANDLE namedPipe = CreateNamedPipe((LPCSTR)pipeName[0], PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED,
-        0, 1, MMPA_PIPE_BUF_SIZE, MMPA_PIPE_BUF_SIZE, 0, nullptr);
+    HANDLE namedPipe = CreateNamedPipe((LPCSTR)pipeName[0], PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED, 0, 1,
+                                       MMPA_PIPE_BUF_SIZE, MMPA_PIPE_BUF_SIZE, 0, nullptr);
     if (namedPipe == INVALID_HANDLE_VALUE) {
         namedPipe = nullptr;
         return EN_ERROR;
@@ -641,14 +617,14 @@ INT32 mmCreateNamedPipe(mmPipeHandle pipeHandle[], CHAR *pipeName[], INT32 waitM
  */
 INT32 mmOpenNamePipe(mmPipeHandle pipeHandle[], CHAR *pipeName[], INT32 waitMode)
 {
-    DWORD  nTimeOut = 0;
+    DWORD nTimeOut = 0;
     if (waitMode) {
         nTimeOut = NMPWAIT_WAIT_FOREVER;
     }
     (void)WaitNamedPipe((LPCSTR)pipeName[0], nTimeOut);
 
-    pipeHandle[0] = CreateFile((LPCSTR)pipeName[0], GENERIC_READ | GENERIC_WRITE, 0, nullptr,
-        OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+    pipeHandle[0] = CreateFile((LPCSTR)pipeName[0], GENERIC_READ | GENERIC_WRITE, 0, nullptr, OPEN_EXISTING,
+                               FILE_ATTRIBUTE_NORMAL, nullptr);
     if (pipeHandle[0] == INVALID_HANDLE_VALUE) {
         return EN_ERROR;
     }
@@ -677,8 +653,8 @@ void mmCloseNamedPipe(mmPipeHandle namedPipe[])
  */
 INT32 mmCreatePipe(mmPipeHandle pipeHandle[], CHAR *pipeName[], UINT32 pipeCount, INT32 waitMode)
 {
-    if (pipeCount != MMPA_PIPE_COUNT || pipeHandle == nullptr || pipeName == nullptr ||
-        pipeName[0] == nullptr || pipeName[1] == nullptr) {
+    if (pipeCount != MMPA_PIPE_COUNT || pipeHandle == nullptr || pipeName == nullptr || pipeName[0] == nullptr ||
+        pipeName[1] == nullptr) {
         return EN_INVALID_PARAM;
     }
 
@@ -731,8 +707,8 @@ INT32 mmCreatePipe(mmPipeHandle pipeHandle[], CHAR *pipeName[], UINT32 pipeCount
  */
 INT32 mmOpenPipe(mmPipeHandle pipeHandle[], CHAR *pipeName[], UINT32 pipeCount, INT32 waitMode)
 {
-    if (pipeCount != MMPA_PIPE_COUNT || pipeHandle == nullptr || pipeName == nullptr ||
-        pipeName[0] == nullptr || pipeName[1] == nullptr) {
+    if (pipeCount != MMPA_PIPE_COUNT || pipeHandle == nullptr || pipeName == nullptr || pipeName[0] == nullptr ||
+        pipeName[1] == nullptr) {
         return EN_INVALID_PARAM;
     }
     INT32 ret = mmOpenNamePipe(pipeHandle, pipeName, waitMode);
@@ -799,14 +775,14 @@ VOID LocalReceiveAction(mmPollfd fd, VOID *buf, UINT32 bufLen, LPOVERLAPPED poa)
         WSARecv((SOCKET)handle, (LPWSABUF)&pPreIoData->DataBuf, 1, &dwRecv, &dwFlags, poa, nullptr);
     } else if (overlapType == pollTypeIoctl) { // ioctl
         DWORD dwRead = 0;
-        DeviceIoControl(handle,           // device to be queried
-                        fd.ioctlCode,     // operation to perform
+        DeviceIoControl(handle,       // device to be queried
+                        fd.ioctlCode, // operation to perform
                         nullptr,
-                        0,                // no input buffer
-                        buf,              // output buffer
+                        0,   // no input buffer
+                        buf, // output buffer
                         bufLen,
-                        &dwRead,          // bytes returned
-                        poa);             // synchronous I/O
+                        &dwRead, // bytes returned
+                        poa);    // synchronous I/O
     }
 }
 
@@ -819,8 +795,8 @@ VOID LocalReceiveAction(mmPollfd fd, VOID *buf, UINT32 bufLen, LPOVERLAPPED poa)
  *       polledData -- 若读取到会填充进缓存，回调出来，缓存大小由用户分配
  * 返回值:超时返回EN_ERR, 读取成功返回EN_OK, 失败返回EN_ERROR, 入参错误返回EN_INVALID_PARAM
  */
-INT32 mmPoll(mmPollfd *fds, INT32 fdCount, INT32 timeout, mmCompletionHandle handleIOCP,
-    pmmPollData polledData, mmPollBack pollBack)
+INT32 mmPoll(mmPollfd *fds, INT32 fdCount, INT32 timeout, mmCompletionHandle handleIOCP, pmmPollData polledData,
+             mmPollBack pollBack)
 {
     if (fds == nullptr || polledData == nullptr || polledData->buf == nullptr || fdCount < 0) {
         return EN_INVALID_PARAM;
@@ -831,7 +807,7 @@ INT32 mmPoll(mmPollfd *fds, INT32 fdCount, INT32 timeout, mmCompletionHandle han
     }
     for (INT32 i = 0; i < fdCount; i++) {
         pmmComPletionKey pCompletionKey = &fds[i].completionKey;
-        OVERLAPPED  overlapped;
+        OVERLAPPED overlapped;
         SecureZeroMemory(&overlapped, sizeof(overlapped));
         if (fds[i].handle == INVALID_HANDLE_VALUE) {
             return EN_INVALID_PARAM;
@@ -846,9 +822,8 @@ INT32 mmPoll(mmPollfd *fds, INT32 fdCount, INT32 timeout, mmCompletionHandle han
     DWORD dwTransCount = 0;
     pmmComPletionKey outCompletionKey = nullptr;
     pmmPollData outPolledData = nullptr;
-    if (GetQueuedCompletionStatus(handleIOCP, &dwTransCount,
-        reinterpret_cast<PULONG_PTR>(&outCompletionKey),
-        reinterpret_cast<LPOVERLAPPED *>(&outPolledData), tout)) {
+    if (GetQueuedCompletionStatus(handleIOCP, &dwTransCount, reinterpret_cast<PULONG_PTR>(&outCompletionKey),
+                                  reinterpret_cast<LPOVERLAPPED *>(&outPolledData), tout)) {
         polledData->bufHandle = outCompletionKey->completionHandle;
         polledData->bufRes = dwTransCount;
         polledData->bufType = outCompletionKey->overlapType;
@@ -890,12 +865,8 @@ CHAR *mmGetErrorFormatMessage(mmErrorMsg errnum, CHAR *buf, mmSize size)
         return nullptr;
     }
 
-    mmErrorMsg ret = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                                   nullptr,
-                                   errnum,
-                                   MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                                   reinterpret_cast<LPTSTR>(buf),
-                                   size,
+    mmErrorMsg ret = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, nullptr, errnum,
+                                   MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPTSTR>(buf), size,
                                    nullptr);
     if (ret == MMPA_ZERO) {
         return nullptr;
@@ -924,7 +895,7 @@ static INT32 localGcd(INT32 a, INT32 b)
 /*
  * 描述:内部使用, 交换内容块
  */
-static void LocalPermuteArgs(INT32 panonoptStart, INT32 panonoptEnd, INT32 optEnd, CHAR * const *nargv)
+static void LocalPermuteArgs(INT32 panonoptStart, INT32 panonoptEnd, INT32 optEnd, CHAR *const *nargv)
 {
     INT32 start;
     INT32 i;
@@ -994,7 +965,7 @@ INT32 mmWaitPid(mmProcess pid, INT32 *status, INT32 options)
         return EN_INVALID_PARAM;
     }
 
-    DWORD  dwMilliseconds;
+    DWORD dwMilliseconds;
     if (options == M_WAIT_NOHANG || options == M_WAIT_UNTRACED) {
         dwMilliseconds = 0; // 不等待立即返回
     } else {
@@ -1069,7 +1040,7 @@ INT32 mmSetEnv(const CHAR *name, const CHAR *value, INT32 overwrite)
         }
     } else {
         // 不覆盖设置,先获取是否存在该name的环境变量，已存在就忽略，不存在就设置下去
-        CHAR env[MMPA_MAX_BUF_SIZE] = { 0 };
+        CHAR env[MMPA_MAX_BUF_SIZE] = {0};
         DWORD result = GetEnvironmentVariable(name, env, MMPA_MAX_BUF_SIZE);
         if (result == MMPA_ZERO && GetLastError() == ERROR_ENVVAR_NOT_FOUND) {
             ret = SetEnvironmentVariable(name, value);
@@ -1095,8 +1066,8 @@ INT32 mmGetDiskFreeSpace(const CHAR *path, mmDiskSize *diskSize)
     if (path == nullptr || diskSize == nullptr) {
         return EN_INVALID_PARAM;
     }
-    BOOL ret = GetDiskFreeSpaceEx(path, (PULARGE_INTEGER)&freeBytesToCaller,
-        (PULARGE_INTEGER)&totalBytes, (PULARGE_INTEGER)&freeBytes);
+    BOOL ret = GetDiskFreeSpaceEx(path, (PULARGE_INTEGER)&freeBytesToCaller, (PULARGE_INTEGER)&totalBytes,
+                                  (PULARGE_INTEGER)&freeBytes);
     if (ret) {
         diskSize->availSize = (ULONGLONG)freeBytesToCaller;
         diskSize->totalSize = (ULONGLONG)totalBytes;
@@ -1203,8 +1174,8 @@ INT32 mmGetMac(mmMacInfo **list, INT32 *count)
     UINT i = 0;
 
     ULONG ulOutBufLen = sizeof(IP_ADAPTER_INFO);
-    PIP_ADAPTER_INFO pAdapterInfo = reinterpret_cast<IP_ADAPTER_INFO *>(HeapAlloc(GetProcessHeap(), \
-        0, (sizeof(IP_ADAPTER_INFO))));
+    PIP_ADAPTER_INFO pAdapterInfo = reinterpret_cast<IP_ADAPTER_INFO *>(
+        HeapAlloc(GetProcessHeap(), 0, (sizeof(IP_ADAPTER_INFO))));
     if (pAdapterInfo == nullptr) {
         return EN_ERROR;
     }
@@ -1221,7 +1192,7 @@ INT32 mmGetMac(mmMacInfo **list, INT32 *count)
     if (dwRetVal == NO_ERROR) {
         pAdapter = pAdapterInfo;
         *count = ulOutBufLen / sizeof(IP_ADAPTER_INFO);
-        pMacInfo = reinterpret_cast<mmMacInfo*>(HeapAlloc(GetProcessHeap(), 0, (*count * sizeof(mmMacInfo))));
+        pMacInfo = reinterpret_cast<mmMacInfo *>(HeapAlloc(GetProcessHeap(), 0, (*count * sizeof(mmMacInfo))));
         if (pMacInfo == nullptr) {
             (void)HeapFree(GetProcessHeap(), 0, pAdapterInfo);
             return EN_ERROR;
@@ -1229,9 +1200,9 @@ INT32 mmGetMac(mmMacInfo **list, INT32 *count)
         INT32 cycle = *count;
         while (cycle--) {
             // 0, 1, 2, 3, 4, 5是固定的MAC地址索引
-            dwRetVal = _snprintf_s(pMacInfo[i].addr, sizeof(pMacInfo[i].addr)-1, "%02X-%02X-%02X-%02X-%02X-%02X", \
-                pAdapter->Address[0], pAdapter->Address[1], pAdapter->Address[2], \
-                pAdapter->Address[3], pAdapter->Address[4], pAdapter->Address[5]);
+            dwRetVal = _snprintf_s(pMacInfo[i].addr, sizeof(pMacInfo[i].addr) - 1, "%02X-%02X-%02X-%02X-%02X-%02X",
+                                   pAdapter->Address[0], pAdapter->Address[1], pAdapter->Address[2],
+                                   pAdapter->Address[3], pAdapter->Address[4], pAdapter->Address[5]);
             if (dwRetVal < MMPA_ZERO) {
                 (void)HeapFree(GetProcessHeap(), 0, pMacInfo);
                 (void)HeapFree(GetProcessHeap(), 0, pAdapterInfo);
@@ -1356,15 +1327,15 @@ static IEnumWbemClassObject *LocalConnectWMIService(IWbemServices **pSvc, IWbemL
         return nullptr;
     }
     // Step 2:设置COM对象安全等级
-    hres = CoInitializeSecurity(nullptr, -1, nullptr, nullptr, RPC_C_AUTHN_LEVEL_DEFAULT,
-        RPC_C_IMP_LEVEL_IMPERSONATE, nullptr, EOAC_NONE, nullptr);
+    hres = CoInitializeSecurity(nullptr, -1, nullptr, nullptr, RPC_C_AUTHN_LEVEL_DEFAULT, RPC_C_IMP_LEVEL_IMPERSONATE,
+                                nullptr, EOAC_NONE, nullptr);
     if (FAILED(hres)) {
         LocalWMIServiceRelease(*pSvc, *pLoc, pEnumerator);
         return nullptr;
     }
     // Step 3:获取WMI初始探测器
-    hres = CoCreateInstance(CLSID_WbemLocator, 0, CLSCTX_INPROC_SERVER,
-        IID_IWbemLocator, reinterpret_cast<LPVOID *>(pLoc));
+    hres = CoCreateInstance(CLSID_WbemLocator, 0, CLSCTX_INPROC_SERVER, IID_IWbemLocator,
+                            reinterpret_cast<LPVOID *>(pLoc));
     if (FAILED(hres)) {
         LocalWMIServiceRelease(*pSvc, *pLoc, pEnumerator);
         return nullptr;
@@ -1377,14 +1348,14 @@ static IEnumWbemClassObject *LocalConnectWMIService(IWbemServices **pSvc, IWbemL
     }
     // Step 5:设置安全等级
     hres = CoSetProxyBlanket(*pSvc, RPC_C_AUTHN_WINNT, RPC_C_AUTHZ_NONE, nullptr, RPC_C_AUTHN_LEVEL_CALL,
-        RPC_C_IMP_LEVEL_IMPERSONATE, nullptr, EOAC_NONE);
+                             RPC_C_IMP_LEVEL_IMPERSONATE, nullptr, EOAC_NONE);
     if (FAILED(hres)) {
         LocalWMIServiceRelease(*pSvc, *pLoc, pEnumerator);
         return nullptr;
     }
 
     hres = (*pSvc)->ExecQuery((BSTR)(L"WQL"), (BSTR)(L"SELECT * FROM Win32_Processor"),
-        WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY, nullptr, &pEnumerator);
+                              WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY, nullptr, &pEnumerator);
     if (FAILED(hres)) {
         LocalWMIServiceRelease(*pSvc, *pLoc, pEnumerator);
         return nullptr;
@@ -1480,7 +1451,7 @@ INT32 mmCpuInfoFree(mmCpuDesc *cpuInfo, INT32 count)
  */
 mmSize mmGetPageSize()
 {
-    SYSTEM_INFO systemInfo = { 0 };
+    SYSTEM_INFO systemInfo = {0};
     GetSystemInfo(&systemInfo);
     return static_cast<mmSize>(systemInfo.dwPageSize);
 }
@@ -1490,4 +1461,3 @@ mmSize mmGetPageSize()
 }
 #endif /* __cpluscplus */
 #endif /* __cpluscplus */
-

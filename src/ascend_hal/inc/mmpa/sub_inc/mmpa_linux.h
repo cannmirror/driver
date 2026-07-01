@@ -30,9 +30,8 @@
 #ifdef __cplusplus
 #if __cplusplus
 extern "C" {
-#endif  // __cpluscplus
-#endif  // __cpluscplus
-
+#endif // __cpluscplus
+#endif // __cpluscplus
 
 #define MMPA_MACINFO_DEFAULT_SIZE 18
 #define MMPA_CPUDESC_DEFAULT_SIZE 64
@@ -69,8 +68,8 @@ typedef long MM_LONG;
 typedef VOID *(*userProcFunc)(VOID *pulArg);
 
 typedef struct {
-    userProcFunc procFunc;  // Callback function pointer
-    VOID *pulArg;           // Callback function parameters
+    userProcFunc procFunc; // Callback function pointer
+    VOID *pulArg;          // Callback function parameters
 } mmUserBlock_t;
 
 typedef struct {
@@ -79,21 +78,21 @@ typedef struct {
     const CHAR *dli_sname;
     VOID *dli_saddr;
     size_t dli_size; /* ELF only */
-    INT32 dli_bind; /* ELF only */
+    INT32 dli_bind;  /* ELF only */
     INT32 dli_type;
 } mmDlInfo;
 
 typedef struct {
-    INT32 wSecond;             // Seconds. [0-60] (1 leap second)
-    INT32 wMinute;             // Minutes. [0-59]
-    INT32 wHour;               // Hours. [0-23]
-    INT32 wDay;                // Day. [1-31]
-    INT32 wMonth;              // Month. [1-12]
-    INT32 wYear;               // Year
-    INT32 wDayOfWeek;          // Day of week. [0-6]
-    INT32 tm_yday;             // Days in year.[0-365]
-    INT32 tm_isdst;            // DST. [-1/0/1]
-    LONG wMilliseconds;        // milliseconds
+    INT32 wSecond;      // Seconds. [0-60] (1 leap second)
+    INT32 wMinute;      // Minutes. [0-59]
+    INT32 wHour;        // Hours. [0-23]
+    INT32 wDay;         // Day. [1-31]
+    INT32 wMonth;       // Month. [1-12]
+    INT32 wYear;        // Year
+    INT32 wDayOfWeek;   // Day of week. [0-6]
+    INT32 tm_yday;      // Days in year.[0-365]
+    INT32 tm_isdst;     // DST. [-1/0/1]
+    LONG wMilliseconds; // milliseconds
 } mmSystemTime_t;
 
 typedef sem_t mmSem_t;
@@ -131,34 +130,34 @@ typedef int mmAtomicType;
 typedef int mmAtomicType64;
 
 typedef enum {
-    pollTypeRead = 1,  // pipe read
-    pollTypeRecv,      // socket recv
-    pollTypeIoctl,     // ioctl
+    pollTypeRead = 1, // pipe read
+    pollTypeRecv,     // socket recv
+    pollTypeIoctl,    // ioctl
 } mmPollType;
 
 typedef struct {
-    mmPollHandle handle;            // The file descriptor or handle of poll is required
-    mmPollType pollType;            // Operation type requiring poll
-                                  // read or recv or ioctl
-    INT32 ioctlCode;                // IOCTL operation code, dedicated to IOCTL
-    mmComPletionKey completionKey;  // The default value is blank, which is used in windows
-                                  // The data used to receive the difference between which handle is readable
+    mmPollHandle handle;           // The file descriptor or handle of poll is required
+    mmPollType pollType;           // Operation type requiring poll
+                                   // read or recv or ioctl
+    INT32 ioctlCode;               // IOCTL operation code, dedicated to IOCTL
+    mmComPletionKey completionKey; // The default value is blank, which is used in windows
+                                   // The data used to receive the difference between which handle is readable
 } mmPollfd;
 
 typedef struct {
-    VOID *priv;              // User defined private content
-    mmPollHandle bufHandle;  // Value of handle corresponding to buf
-    mmPollType bufType;      // Data types polled to
-    VOID *buf;               // Data used in poll
-    UINT32 bufLen;           // Data length used in poll
-    UINT32 bufRes;           // Actual return length
+    VOID *priv;             // User defined private content
+    mmPollHandle bufHandle; // Value of handle corresponding to buf
+    mmPollType bufType;     // Data types polled to
+    VOID *buf;              // Data used in poll
+    UINT32 bufLen;          // Data length used in poll
+    UINT32 bufRes;          // Actual return length
 } mmPollData, *pmmPollData;
 
 typedef VOID (*mmPollBack)(pmmPollData);
 
 typedef struct {
-    INT32 tz_minuteswest;  // How many minutes is it different from Greenwich
-    INT32 tz_dsttime;      // type of DST correction
+    INT32 tz_minuteswest; // How many minutes is it different from Greenwich
+    INT32 tz_dsttime;     // type of DST correction
 } mmTimezone;
 
 typedef struct {
@@ -185,7 +184,7 @@ typedef mode_t mmMode_t;
 typedef struct option mmStructOption;
 
 typedef struct {
-    CHAR addr[MMPA_MACINFO_DEFAULT_SIZE];  // ex:aa-bb-cc-dd-ee-ff\0
+    CHAR addr[MMPA_MACINFO_DEFAULT_SIZE]; // ex:aa-bb-cc-dd-ee-ff\0
 } mmMacInfo;
 
 typedef struct {
@@ -197,28 +196,28 @@ typedef struct {
 
 typedef struct {
     CHAR arch[MMPA_CPUDESC_DEFAULT_SIZE];
-    CHAR manufacturer[MMPA_CPUDESC_DEFAULT_SIZE];  // vendor
-    CHAR version[MMPA_CPUDESC_DEFAULT_SIZE];       // modelname
-    INT32 frequency;                               // cpu frequency
-    INT32 maxFrequency;                            // max speed
-    INT32 ncores;                                  // cpu cores
-    INT32 nthreads;                                // cpu thread count
-    INT32 ncounts;                                 // logical cpu nums
+    CHAR manufacturer[MMPA_CPUDESC_DEFAULT_SIZE]; // vendor
+    CHAR version[MMPA_CPUDESC_DEFAULT_SIZE];      // modelname
+    INT32 frequency;                              // cpu frequency
+    INT32 maxFrequency;                           // max speed
+    INT32 ncores;                                 // cpu cores
+    INT32 nthreads;                               // cpu thread count
+    INT32 ncounts;                                // logical cpu nums
 } mmCpuDesc;
 
 typedef mode_t MODE;
 
 typedef struct {
-    INT32 detachFlag;    // Determine whether to set separation property 0, not to separate 1
-    INT32 priorityFlag;  // Determine whether to set priority 0 and not set 1
-    INT32 priority;      // Priority value range to be set 1-99
-    INT32 policyFlag;    // Set scheduling policy or not 0 do not set 1 setting
-    INT32 policy;        // Scheduling policy value value
-                         //  MMPA_THREAD_SCHED_RR
-                         //  MMPA_THREAD_SCHED_OTHER
-                         //  MMPA_THREAD_SCHED_FIFO
-    INT32 stackFlag;     // Set stack size or not: 0 does not set 1 setting
-    UINT32 stackSize;    // The stack size unit bytes to be set cannot be less than MMPA_THREAD_STACK_MIN
+    INT32 detachFlag;   // Determine whether to set separation property 0, not to separate 1
+    INT32 priorityFlag; // Determine whether to set priority 0 and not set 1
+    INT32 priority;     // Priority value range to be set 1-99
+    INT32 policyFlag;   // Set scheduling policy or not 0 do not set 1 setting
+    INT32 policy;       // Scheduling policy value value
+                        //  MMPA_THREAD_SCHED_RR
+                        //  MMPA_THREAD_SCHED_OTHER
+                        //  MMPA_THREAD_SCHED_FIFO
+    INT32 stackFlag;    // Set stack size or not: 0 does not set 1 setting
+    UINT32 stackSize;   // The stack size unit bytes to be set cannot be less than MMPA_THREAD_STACK_MIN
 } mmThreadAttr;
 
 #ifdef __ANDROID__
@@ -226,9 +225,9 @@ typedef struct {
 #define S_IWRITE S_IWUSR
 #endif
 
-#define mm_no_argument        no_argument
-#define mm_required_argument  required_argument
-#define mm_optional_argument  optional_argument
+#define mm_no_argument no_argument
+#define mm_required_argument required_argument
+#define mm_optional_argument optional_argument
 
 #define M_FILE_RDONLY O_RDONLY
 #define M_FILE_WRONLY O_WRONLY
@@ -263,10 +262,10 @@ typedef struct {
 #define M_MSG_EXCL (IPC_CREAT | IPC_EXCL)
 #define M_MSG_NOWAIT IPC_NOWAIT
 
-#define M_WAIT_NOHANG WNOHANG  // Non blocking waiting
+#define M_WAIT_NOHANG WNOHANG // Non blocking waiting
 #define M_WAIT_UNTRACED \
-  WUNTRACED  // If the subprocess enters the suspended state, it will return immediately
-             // But the end state of the subprocess is ignored
+    WUNTRACED // If the subprocess enters the suspended state, it will return immediately
+              // But the end state of the subprocess is ignored
 #define M_UMASK_USRREAD S_IRUSR
 #define M_UMASK_GRPREAD S_IRGRP
 #define M_UMASK_OTHREAD S_IROTH
@@ -293,7 +292,6 @@ typedef struct {
 #define M_X_OK X_OK
 #define M_W_OK W_OK
 #define M_R_OK R_OK
-
 
 #define MM_DT_DIR DT_DIR
 #define MM_DT_REG DT_REG
@@ -359,10 +357,10 @@ MMPA_FUNC_VISIBILITY INT32 mmConnect(mmSockHandle sockFd, mmSockAddr *addr, mmSo
 MMPA_FUNC_VISIBILITY INT32 mmCloseSocket(mmSockHandle sockFd);
 MMPA_FUNC_VISIBILITY mmSsize_t mmSocketSend(mmSockHandle sockFd, VOID *sendBuf, INT32 sendLen, INT32 sendFlag);
 MMPA_FUNC_VISIBILITY mmSsize_t mmSocketRecv(mmSockHandle sockFd, VOID *recvBuf, INT32 recvLen, INT32 recvFlag);
-MMPA_FUNC_VISIBILITY INT32 mmSocketSendTo(mmSockHandle sockFd, VOID *sendMsg, INT32 sendLen,
-                                          UINT32 sendFlag, const mmSockAddr* addr, INT32 tolen);
-MMPA_FUNC_VISIBILITY mmSsize_t mmSocketRecvFrom(mmSockHandle sockFd, VOID *recvBuf, mmSize recvLen,
-                                                UINT32 recvFlag, mmSockAddr* addr, mmSocklen_t *FromLen);
+MMPA_FUNC_VISIBILITY INT32 mmSocketSendTo(mmSockHandle sockFd, VOID *sendMsg, INT32 sendLen, UINT32 sendFlag,
+                                          const mmSockAddr *addr, INT32 tolen);
+MMPA_FUNC_VISIBILITY mmSsize_t mmSocketRecvFrom(mmSockHandle sockFd, VOID *recvBuf, mmSize recvLen, UINT32 recvFlag,
+                                                mmSockAddr *addr, mmSocklen_t *FromLen);
 MMPA_FUNC_VISIBILITY INT32 mmSAStartup(void);
 MMPA_FUNC_VISIBILITY INT32 mmSACleanup(void);
 MMPA_FUNC_VISIBILITY VOID *mmDlopen(const CHAR *fileName, INT32 mode);
@@ -370,8 +368,8 @@ MMPA_FUNC_VISIBILITY INT32 mmDladdr(VOID *addr, mmDlInfo *info);
 MMPA_FUNC_VISIBILITY VOID *mmDlsym(VOID *handle, const CHAR *funcName);
 MMPA_FUNC_VISIBILITY INT32 mmDlclose(VOID *handle);
 MMPA_FUNC_VISIBILITY CHAR *mmDlerror(void);
-MMPA_FUNC_VISIBILITY INT32 mmCreateAndSetTimer(mmTimer *timerHandle, mmUserBlock_t *timerBlock,
-                                               UINT milliSecond, UINT period);
+MMPA_FUNC_VISIBILITY INT32 mmCreateAndSetTimer(mmTimer *timerHandle, mmUserBlock_t *timerBlock, UINT milliSecond,
+                                               UINT period);
 MMPA_FUNC_VISIBILITY INT32 mmDeleteTimer(mmTimer timerHandle);
 MMPA_FUNC_VISIBILITY INT32 mmStatGet(const CHAR *path, mmStat_t *buffer);
 MMPA_FUNC_VISIBILITY INT32 mmStat64Get(const CHAR *path, mmStat64_t *buffer);
@@ -419,8 +417,8 @@ MMPA_FUNC_VISIBILITY VOID mmClosePipe(mmPipeHandle pipeHandle[], UINT32 pipeCoun
 // Poll related interface
 MMPA_FUNC_VISIBILITY mmCompletionHandle mmCreateCompletionPort(void);
 MMPA_FUNC_VISIBILITY VOID mmCloseCompletionPort(mmCompletionHandle handle);
-MMPA_FUNC_VISIBILITY INT32 mmPoll(mmPollfd *fds, INT32 fdCount, INT32 timeout,
-                                  mmCompletionHandle handleIOCP, pmmPollData polledData, mmPollBack pollBack);
+MMPA_FUNC_VISIBILITY INT32 mmPoll(mmPollfd *fds, INT32 fdCount, INT32 timeout, mmCompletionHandle handleIOCP,
+                                  pmmPollData polledData, mmPollBack pollBack);
 MMPA_FUNC_VISIBILITY INT32 mmGetErrorCode(void);
 MMPA_FUNC_VISIBILITY CHAR *mmGetErrorFormatMessage(mmErrorMsg errnum, CHAR *buf, mmSize size);
 MMPA_FUNC_VISIBILITY INT32 mmGetTimeOfDay(mmTimeval *timeVal, mmTimezone *timeZone);
@@ -465,8 +463,8 @@ MMPA_FUNC_VISIBILITY VOID mmSetOpOpt(INT32 mmOptOpt);
 MMPA_FUNC_VISIBILITY CHAR *mmGetOptArg(void);
 MMPA_FUNC_VISIBILITY VOID mmSetOptArg(CHAR *mmOptArg);
 MMPA_FUNC_VISIBILITY INT32 mmGetOpt(INT32 argc, CHAR *const *argv, const CHAR *opts);
-MMPA_FUNC_VISIBILITY INT32 mmGetOptLong(INT32 argc, CHAR *const *argv, const CHAR *opts,
-                                        const mmStructOption *longOpts, INT32 *longIndex);
+MMPA_FUNC_VISIBILITY INT32 mmGetOptLong(INT32 argc, CHAR *const *argv, const CHAR *opts, const mmStructOption *longOpts,
+                                        INT32 *longIndex);
 
 MMPA_FUNC_VISIBILITY LONG mmLseek(INT32 fd, INT64 offset, INT32 seekFlag);
 MMPA_FUNC_VISIBILITY INT32 mmFtruncate(mmProcess fd, UINT32 length);
@@ -534,11 +532,10 @@ MMPA_FUNC_VISIBILITY INT32 mmGetMac(mmMacInfo **list, INT32 *count);
 MMPA_FUNC_VISIBILITY INT32 mmGetMacFree(mmMacInfo *list, INT32 count);
 MMPA_FUNC_VISIBILITY INT32 mmGetCpuInfo(mmCpuDesc **cpuInfo, INT32 *count);
 MMPA_FUNC_VISIBILITY INT32 mmCpuInfoFree(mmCpuDesc *cpuInfo, INT32 count);
-MMPA_FUNC_VISIBILITY INT32 mmCreateProcess(const CHAR *fileName, const mmArgvEnv *env,
-                                           const CHAR *stdoutRedirectFile, mmProcess *id);
+MMPA_FUNC_VISIBILITY INT32 mmCreateProcess(const CHAR *fileName, const mmArgvEnv *env, const CHAR *stdoutRedirectFile,
+                                           mmProcess *id);
 
-MMPA_FUNC_VISIBILITY INT32 mmCreateTaskWithThreadAttr(mmThread *threadHandle,
-                                                      const mmUserBlock_t *funcBlock,
+MMPA_FUNC_VISIBILITY INT32 mmCreateTaskWithThreadAttr(mmThread *threadHandle, const mmUserBlock_t *funcBlock,
                                                       const mmThreadAttr *threadAttr);
 MMPA_FUNC_VISIBILITY mmFileHandle mmShmOpen(const CHAR *name, INT32 oflag, mmMode_t mode);
 MMPA_FUNC_VISIBILITY INT32 mmShmUnlink(const CHAR *name);
@@ -553,50 +550,53 @@ MMPA_FUNC_VISIBILITY VOID mmAlignFree(VOID *addr);
 // compatible with versions without mmSysGetEnv, mmSysGetEnv, mmSysSetEnv, mmSysUnsetEnv
 // only support  enum name, env variable is not support
 // example: char *value = NULL; MM_SYS_GET_ENV(MM_ENV_HOME, value);
-#define MM_SYS_GET_ENV(IdName, value)                                       \
-    do {                                                                    \
-        if (mmSysGetEnv != NULL)                                            \
-        {                                                                   \
-            value = mmSysGetEnv(IdName);                                    \
-            if (value != NULL) {break;}                                     \
-        }                                                                   \
-        const char* env_name = #IdName;                                     \
-        if (strncmp(env_name, "MM_ENV_", sizeof("MM_ENV_") - 1UL) == 0) {   \
-            value = getenv(env_name + sizeof("MM_ENV_") - 1UL);             \
-        } else {                                                            \
-            value = NULL;                                                   \
-        }                                                                   \
-    } while(0)
+#define MM_SYS_GET_ENV(IdName, value)                                     \
+    do {                                                                  \
+        if (mmSysGetEnv != NULL) {                                        \
+            value = mmSysGetEnv(IdName);                                  \
+            if (value != NULL) {                                          \
+                break;                                                    \
+            }                                                             \
+        }                                                                 \
+        const char *env_name = #IdName;                                   \
+        if (strncmp(env_name, "MM_ENV_", sizeof("MM_ENV_") - 1UL) == 0) { \
+            value = getenv(env_name + sizeof("MM_ENV_") - 1UL);           \
+        } else {                                                          \
+            value = NULL;                                                 \
+        }                                                                 \
+    } while (0)
 
 #define MM_SYS_SET_ENV(IdName, value, overwrite, ret)                           \
     do {                                                                        \
-        if (mmSysSetEnv != NULL)                                                \
-        {                                                                       \
+        if (mmSysSetEnv != NULL) {                                              \
             ret = mmSysSetEnv(IdName, value, overwrite);                        \
-            if (ret != EN_INVALID_PARAM) {break;}                               \
+            if (ret != EN_INVALID_PARAM) {                                      \
+                break;                                                          \
+            }                                                                   \
         }                                                                       \
-        const char* env_name = #IdName;                                         \
+        const char *env_name = #IdName;                                         \
         if (strncmp(env_name, "MM_ENV_", sizeof("MM_ENV_") - 1UL) == 0) {       \
             ret = setenv(env_name + sizeof("MM_ENV_") - 1UL, value, overwrite); \
         } else {                                                                \
             ret = EN_INVALID_PARAM;                                             \
         }                                                                       \
-    } while(0)
+    } while (0)
 
-#define MM_SYS_UNSET_ENV(IdName, ret)                                       \
-    do {                                                                    \
-        if (mmSysUnsetEnv != NULL)                                          \
-        {                                                                   \
-            ret = mmSysUnsetEnv(IdName);                                    \
-            if (ret != EN_INVALID_PARAM) {break;}                           \
-        }                                                                   \
-        const char* env_name = #IdName;                                     \
-        if (strncmp(env_name, "MM_ENV_", sizeof("MM_ENV_") - 1UL) == 0) {   \
-            ret = unsetenv(env_name + sizeof("MM_ENV_") - 1UL);             \
-        } else {                                                            \
-            ret = EN_INVALID_PARAM;                                         \
-        }                                                                   \
-    } while(0)
+#define MM_SYS_UNSET_ENV(IdName, ret)                                     \
+    do {                                                                  \
+        if (mmSysUnsetEnv != NULL) {                                      \
+            ret = mmSysUnsetEnv(IdName);                                  \
+            if (ret != EN_INVALID_PARAM) {                                \
+                break;                                                    \
+            }                                                             \
+        }                                                                 \
+        const char *env_name = #IdName;                                   \
+        if (strncmp(env_name, "MM_ENV_", sizeof("MM_ENV_") - 1UL) == 0) { \
+            ret = unsetenv(env_name + sizeof("MM_ENV_") - 1UL);           \
+        } else {                                                          \
+            ret = EN_INVALID_PARAM;                                       \
+        }                                                                 \
+    } while (0)
 
 #ifdef __cplusplus
 #if __cplusplus

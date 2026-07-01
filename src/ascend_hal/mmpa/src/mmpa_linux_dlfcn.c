@@ -27,7 +27,7 @@
 #include "mmpa_api.h"
 
 #ifdef __cplusplus
-#if    __cplusplus
+#if __cplusplus
 extern "C" {
 #endif /* __cpluscplus */
 #endif /* __cpluscplus */
@@ -113,4 +113,3 @@ CHAR *mmDlerror(VOID)
 }
 #endif /* __cpluscplus */
 #endif /* __cpluscplus */
-

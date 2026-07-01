@@ -27,7 +27,7 @@
 #include "mmpa_api.h"
 
 #ifdef __cplusplus
-#if    __cplusplus
+#if __cplusplus
 extern "C" {
 #endif /* __cpluscplus */
 #endif
@@ -218,8 +218,8 @@ INT32 mmRmdir(const CHAR *pathName)
 
         childDir = opendir(buf);
         if (childDir != NULL) {
-            (VOID)closedir(childDir);
-            (VOID)mmRmdir(buf);
+            (VOID) closedir(childDir);
+            (VOID) mmRmdir(buf);
             free(buf);
             buf = NULL;
             continue;
@@ -233,7 +233,7 @@ INT32 mmRmdir(const CHAR *pathName)
         free(buf);
         buf = NULL;
     }
-    (VOID)closedir(dir);
+    (VOID) closedir(dir);
 
     ret = rmdir(pathName);
     if (ret == EN_ERROR) {
@@ -654,7 +654,7 @@ INT32 mmGetFileSize(const CHAR *fileName, ULONGLONG *length)
         return EN_INVALID_PARAM;
     }
     struct stat fileStat;
-    (VOID)memset_s(&fileStat, sizeof(fileStat), 0, sizeof(fileStat)); /* unsafe_function_ignore: memset */
+    (VOID) memset_s(&fileStat, sizeof(fileStat), 0, sizeof(fileStat)); /* unsafe_function_ignore: memset */
     INT32 ret = lstat(fileName, &fileStat);
     if (ret < MMPA_ZERO) {
         return EN_ERROR;
@@ -674,7 +674,7 @@ INT32 mmIsDir(const CHAR *fileName)
         return EN_INVALID_PARAM;
     }
     struct stat fileStat;
-    (VOID)memset_s(&fileStat, sizeof(fileStat), 0, sizeof(fileStat)); /* unsafe_function_ignore: memset */
+    (VOID) memset_s(&fileStat, sizeof(fileStat), 0, sizeof(fileStat)); /* unsafe_function_ignore: memset */
     INT32 ret = lstat(fileName, &fileStat);
     if (ret < MMPA_ZERO) {
         return EN_ERROR;
@@ -688,16 +688,17 @@ INT32 mmIsDir(const CHAR *fileName)
 
 /*
  * 描述：创建或者打开共享内存文件
- * 参数：name- 要打开或者创建的共享内存文件名，linux：打开的文件都是位于/dev/shm目录的，因此name不能带路径；windows：需要带路径
+ * 参数：name-
+ * 要打开或者创建的共享内存文件名，linux：打开的文件都是位于/dev/shm目录的，因此name不能带路径；windows：需要带路径
  *       oflag：打开的文件操作属性
  *       mode：共享模式
  * 返回值：成功返回创建或者打开的文件句柄，执行错误返回EN_ERROR, 入参检查错误返回EN_INVALID_PARAM
  */
 mmFileHandle mmShmOpen(const CHAR *name, INT32 oflag, mmMode_t mode)
 {
-    (VOID)name;
-    (VOID)oflag;
-    (VOID)mode;
+    (VOID) name;
+    (VOID) oflag;
+    (VOID) mode;
     return EN_ERROR;
 }
 
@@ -708,7 +709,7 @@ mmFileHandle mmShmOpen(const CHAR *name, INT32 oflag, mmMode_t mode)
  */
 INT32 mmShmUnlink(const CHAR *name)
 {
-    (VOID)name;
+    (VOID) name;
     return EN_ERROR;
 }
 
@@ -758,4 +759,3 @@ INT32 mmMunMap(VOID *data, mmSize_t size, mmFd_t *extra)
 }
 #endif /* __cpluscplus */
 #endif /* __cpluscplus */
-

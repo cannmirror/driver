@@ -27,7 +27,7 @@
 #include "mmpa_api.h"
 
 #ifdef __cplusplus
-#if    __cplusplus
+#if __cplusplus
 extern "C" {
 #endif /* __cpluscplus */
 #endif
@@ -74,7 +74,7 @@ static mmEnvInfo s_envList[] = {
     {MM_ENV_ASCEND_LATEST_INSTALL_PATH, "ASCEND_LATEST_INSTALL_PATH"},
     {MM_ENV_DATAMASTER_RUN_MODE, "DATAMASTER_RUN_MODE"},
     {MM_ENV_REGISTER_TO_ASCENDMONITOR, "REGISTER_TO_ASCENDMONITOR"},
-    {MM_ENV_ASAN_RUN_MODE,"ASAN_RUN_MODE"},
+    {MM_ENV_ASAN_RUN_MODE, "ASAN_RUN_MODE"},
     {MM_ENV_MAX_COMPILE_CORE_NUMBER, "MAX_COMPILE_CORE_NUMBER"},
     {MM_ENV_EMBEDDING_MAX_THREAD_CORE_NUMBER, "EMBEDDING_MAX_THREAD_CORE_NUMBER"},
     {MM_ENV_AICPU_PROFILING_MODE, "AICPU_PROFILING_MODE"},
@@ -158,7 +158,7 @@ static mmEnvInfo s_envList[] = {
 
     // AOE
     {MM_ENV_TUNE_BANK_PATH, "TUNE_BANK_PATH"},
-    
+
     // FE
     {MM_ENV_ENABLE_ACLNN, "ENABLE_ACLNN"},
     {MM_ENV_MIN_COMPILE_RESOURCE_USAGE_CTRL, "MIN_COMPILE_RESOURCE_USAGE_CTRL"},
@@ -186,7 +186,7 @@ static mmEnvInfo s_envList[] = {
 static mmEnvInfo *GetEnvInfoById(mmEnvId id)
 {
     ULONG i = 0;
-    for (i = 0; i < sizeof(s_envList)/sizeof(s_envList[0]); ++i) {
+    for (i = 0; i < sizeof(s_envList) / sizeof(s_envList[0]); ++i) {
         if (s_envList[i].id == id) {
             return &s_envList[i];
         }

@@ -27,20 +27,20 @@
 #include "mmpa_api.h"
 
 #ifdef __cplusplus
-#if    __cplusplus
+#if __cplusplus
 extern "C" {
 #endif /* __cpluscplus */
 #endif /* __cpluscplus */
 
-#define MMPA_CPUINFO_DEFAULT_SIZE               64
-#define MMPA_CPUINFO_DOUBLE_SIZE                128
-#define MMPA_CPUPROC_BUF_SIZE                   256
-#define MMPA_MAX_IF_SIZE                        2048
-#define MMPA_SECOND_TO_MSEC                     1000
-#define MMPA_MSEC_TO_NSEC                       1000000
-#define MMPA_SECOND_TO_NSEC                     1000000000
-#define MMPA_MAX_PHYSICALCPU_COUNT              4096
-#define MMPA_MIN_PHYSICALCPU_COUNT              1
+#define MMPA_CPUINFO_DEFAULT_SIZE 64
+#define MMPA_CPUINFO_DOUBLE_SIZE 128
+#define MMPA_CPUPROC_BUF_SIZE 256
+#define MMPA_MAX_IF_SIZE 2048
+#define MMPA_SECOND_TO_MSEC 1000
+#define MMPA_MSEC_TO_NSEC 1000000
+#define MMPA_SECOND_TO_NSEC 1000000000
+#define MMPA_MAX_PHYSICALCPU_COUNT 4096
+#define MMPA_MIN_PHYSICALCPU_COUNT 1
 
 struct CpuTypeTable {
     const CHAR *key;
@@ -195,8 +195,7 @@ INT32 mmOpen2(const CHAR *pathName, INT32 flags, MODE mode)
     if (((tmp & (O_TRUNC | O_WRONLY | O_RDWR | O_CREAT)) == MMPA_ZERO) && (flags != O_RDONLY)) {
         return EN_INVALID_PARAM;
     }
-    if (((mode & (S_IRUSR | S_IREAD)) == MMPA_ZERO) &&
-        ((mode & (S_IWUSR | S_IWRITE)) == MMPA_ZERO)) {
+    if (((mode & (S_IRUSR | S_IREAD)) == MMPA_ZERO) && ((mode & (S_IWUSR | S_IWRITE)) == MMPA_ZERO)) {
         return EN_INVALID_PARAM;
     }
 
@@ -300,7 +299,7 @@ mmSockHandle mmSocket(INT32 sockFamily, INT32 type, INT32 protocol)
  *       addrLen--对应地址的长度
  * 返回值:执行成功返回EN_OK, 执行错误返回EN_ERROR, 入参检查错误返回EN_INVALID_PARAM
  */
-INT32 mmBind(mmSockHandle sockFd, mmSockAddr* addr, mmSocklen_t addrLen)
+INT32 mmBind(mmSockHandle sockFd, mmSockAddr *addr, mmSocklen_t addrLen)
 {
     if ((sockFd < MMPA_ZERO) || (addr == NULL) || (addrLen == MMPA_ZERO)) {
         return EN_INVALID_PARAM;
@@ -360,7 +359,7 @@ mmSockHandle mmAccept(mmSockHandle sockFd, mmSockAddr *addr, mmSocklen_t *addrLe
  *      addrLen--地址的长度
  * 返回值:执行成功返回EN_OK, 执行错误返回EN_ERROR, 入参检查错误返回EN_INVALID_PARAM
  */
-INT32 mmConnect(mmSockHandle sockFd, mmSockAddr* addr, mmSocklen_t addrLen)
+INT32 mmConnect(mmSockHandle sockFd, mmSockAddr *addr, mmSocklen_t addrLen)
 {
     if ((sockFd < MMPA_ZERO) || (addr == NULL) || (addrLen == MMPA_ZERO)) {
         return EN_INVALID_PARAM;
@@ -405,15 +404,10 @@ mmSsize_t mmSocketSend(mmSockHandle sockFd, VOID *sendBuf, INT32 sendLen, INT32 
  *       tolen--addr所指地址的长度
  * 返回值：执行成功返回实际发送的buf长度, 执行错误返回EN_ERROR, 入参检查错误返回EN_INVALID_PARAM
  */
-INT32 mmSocketSendTo(mmSockHandle sockFd,
-                     VOID *sendMsg,
-                     INT32 sendLen,
-                     UINT32 sendFlag,
-                     const mmSockAddr* addr,
+INT32 mmSocketSendTo(mmSockHandle sockFd, VOID *sendMsg, INT32 sendLen, UINT32 sendFlag, const mmSockAddr *addr,
                      INT32 tolen)
 {
-    if ((sockFd < MMPA_ZERO) || (sendMsg == NULL) ||
-        (sendLen <= MMPA_ZERO) || (addr == NULL) || (tolen <= MMPA_ZERO)) {
+    if ((sockFd < MMPA_ZERO) || (sendMsg == NULL) || (sendLen <= MMPA_ZERO) || (addr == NULL) || (tolen <= MMPA_ZERO)) {
         return EN_INVALID_PARAM;
     }
     ssize_t ret = sendto(sockFd, sendMsg, (size_t)(LONG)sendLen, (INT)sendFlag, addr, (socklen_t)tolen);
@@ -455,11 +449,7 @@ mmSsize_t mmSocketRecv(mmSockHandle sockFd, VOID *recvBuf, INT32 recvLen, INT32 
  *       FromLen--addr所指地址的长度
  * 返回值：执行成功返回实际发送的buf长度, 执行错误返回EN_ERROR, 入参检查错误返回EN_INVALID_PARAM
  */
-mmSsize_t mmSocketRecvFrom(mmSockHandle sockFd,
-                           VOID *recvBuf,
-                           mmSize recvLen,
-                           UINT32 recvFlag,
-                           mmSockAddr* addr,
+mmSsize_t mmSocketRecvFrom(mmSockHandle sockFd, VOID *recvBuf, mmSize recvLen, UINT32 recvFlag, mmSockAddr *addr,
                            mmSocklen_t *FromLen)
 {
     if ((sockFd < MMPA_ZERO) || (recvBuf == NULL) || (recvLen == MMPA_ZERO) || (addr == NULL) || (FromLen == NULL)) {
@@ -511,7 +501,7 @@ INT32 mmSACleanup(VOID)
  */
 static VOID mmTimerCallBack(union sigval userData)
 {
-    const mmUserBlock_t * const tmp = (mmUserBlock_t *)userData.sival_ptr;
+    const mmUserBlock_t *const tmp = (mmUserBlock_t *)userData.sival_ptr;
     tmp->procFunc(tmp->pulArg);
     return;
 }
@@ -530,7 +520,7 @@ INT32 mmCreateAndSetTimer(mmTimer *timerHandle, mmUserBlock_t *timerBlock, UINT 
     }
 
     struct sigevent event;
-    (VOID)memset_s(&event, sizeof(event), MMPA_ZERO, sizeof(event)); /* unsafe_function_ignore: memset */
+    (VOID) memset_s(&event, sizeof(event), MMPA_ZERO, sizeof(event)); /* unsafe_function_ignore: memset */
     event.sigev_value.sival_ptr = timerBlock;
     event.sigev_notify = SIGEV_THREAD;
     event.sigev_notify_function = mmTimerCallBack;
@@ -542,9 +532,9 @@ INT32 mmCreateAndSetTimer(mmTimer *timerHandle, mmUserBlock_t *timerBlock, UINT 
     }
 
     struct itimerspec waitTime;
-    (VOID)memset_s(&waitTime, sizeof(waitTime), MMPA_ZERO, sizeof(waitTime)); /* unsafe_function_ignore: memset */
+    (VOID) memset_s(&waitTime, sizeof(waitTime), MMPA_ZERO, sizeof(waitTime)); /* unsafe_function_ignore: memset */
 
-    waitTime.it_interval.tv_sec =  (LONG)period / MMPA_SECOND_TO_MSEC;
+    waitTime.it_interval.tv_sec = (LONG)period / MMPA_SECOND_TO_MSEC;
     waitTime.it_interval.tv_nsec = ((LONG)period % MMPA_SECOND_TO_MSEC) * MMPA_MSEC_TO_NSEC;
 
     waitTime.it_value.tv_sec = (LONG)milliSecond / MMPA_SECOND_TO_MSEC;
@@ -552,7 +542,7 @@ INT32 mmCreateAndSetTimer(mmTimer *timerHandle, mmUserBlock_t *timerBlock, UINT 
 
     ret = timer_settime(*timerHandle, MMPA_ZERO, &waitTime, NULL);
     if (ret != EN_OK) {
-        (VOID)timer_delete(*timerHandle);
+        (VOID) timer_delete(*timerHandle);
         return EN_ERROR;
     }
 
@@ -581,7 +571,7 @@ INT32 mmDeleteTimer(mmTimer timerHandle)
 static LONG GetMonnotonicTime(VOID)
 {
     struct timespec curTime = {0};
-    (VOID)clock_gettime(CLOCK_MONOTONIC, &curTime);
+    (VOID) clock_gettime(CLOCK_MONOTONIC, &curTime);
     // 以毫秒为单位
     LONG result = (LONG)((curTime.tv_sec) * MMPA_SECOND_TO_MSEC);
     result += (LONG)((curTime.tv_nsec) / MMPA_MSEC_TO_NSEC);
@@ -605,7 +595,7 @@ INT32 mmSemTimedWait(mmSem_t *sem, INT32 timeout)
         if (sem_trywait(sem) == EN_OK) {
             return EN_OK;
         }
-        (VOID)mmSleep(1); // 延时1毫秒再检测
+        (VOID) mmSleep(1); // 延时1毫秒再检测
     } while (GetMonnotonicTime() <= endTime);
     return EN_OK;
 }
@@ -624,7 +614,7 @@ mmSsize_t mmWritev(mmProcess fd, mmIovSegment *iov, INT32 iovcnt)
         return EN_INVALID_PARAM;
     }
     struct iovec tmpSegment[MAX_IOVEC_SIZE];
-    (VOID)memset_s(tmpSegment, sizeof(tmpSegment), 0, sizeof(tmpSegment)); /* unsafe_function_ignore: memset */
+    (VOID) memset_s(tmpSegment, sizeof(tmpSegment), 0, sizeof(tmpSegment)); /* unsafe_function_ignore: memset */
 
     for (i = 0; i < iovcnt; i++) {
         tmpSegment[i].iov_base = iov[i].sendBuf;
@@ -724,10 +714,10 @@ INT32 mmOpenNamePipe(mmPipeHandle pipeHandle[], CHAR *pipeName[], INT32 waitMode
 VOID mmCloseNamedPipe(mmPipeHandle namedPipe[])
 {
     if (namedPipe[0] != 0) {
-        (VOID)close(namedPipe[0]);
+        (VOID) close(namedPipe[0]);
     }
     if (namedPipe[1] != 0) {
-        (VOID)close(namedPipe[1]);
+        (VOID) close(namedPipe[1]);
     }
     return;
 }
@@ -742,8 +732,8 @@ VOID mmCloseNamedPipe(mmPipeHandle namedPipe[])
  */
 INT32 mmCreatePipe(mmPipeHandle pipeHandle[], CHAR *pipeName[], UINT32 pipeCount, INT32 waitMode)
 {
-    if ((pipeCount != MMPA_PIPE_COUNT) || (pipeHandle == NULL) || (pipeName == NULL) ||
-        (pipeName[0] == NULL) || (pipeName[1] == NULL)) {
+    if ((pipeCount != MMPA_PIPE_COUNT) || (pipeHandle == NULL) || (pipeName == NULL) || (pipeName[0] == NULL) ||
+        (pipeName[1] == NULL)) {
         return EN_INVALID_PARAM;
     }
     INT32 writePipe = EN_ERROR;
@@ -774,12 +764,12 @@ INT32 mmCreatePipe(mmPipeHandle pipeHandle[], CHAR *pipeName[], UINT32 pipeCount
     }
 
     if ((pipeHandle[0] == EN_ERROR) || (pipeHandle[1] == EN_ERROR)) {
-        (VOID)mmClose(pipeHandle[0]);
-        (VOID)mmClose(pipeHandle[1]);
-        (VOID)mmClose(writePipe);
+        (VOID) mmClose(pipeHandle[0]);
+        (VOID) mmClose(pipeHandle[1]);
+        (VOID) mmClose(writePipe);
         return EN_ERROR;
     } else {
-        (VOID)mmClose(writePipe);
+        (VOID) mmClose(writePipe);
         return EN_OK;
     }
 }
@@ -793,8 +783,8 @@ INT32 mmCreatePipe(mmPipeHandle pipeHandle[], CHAR *pipeName[], UINT32 pipeCount
  */
 INT32 mmOpenPipe(mmPipeHandle pipeHandle[], CHAR *pipeName[], UINT32 pipeCount, INT32 waitMode)
 {
-    if ((pipeCount != MMPA_PIPE_COUNT) || (pipeHandle == NULL) || (pipeName == NULL) ||
-        (pipeName[0] == NULL) || (pipeName[1] == NULL)) {
+    if ((pipeCount != MMPA_PIPE_COUNT) || (pipeHandle == NULL) || (pipeName == NULL) || (pipeName[0] == NULL) ||
+        (pipeName[1] == NULL)) {
         return EN_INVALID_PARAM;
     }
     if (waitMode == MMPA_ZERO) {
@@ -806,8 +796,8 @@ INT32 mmOpenPipe(mmPipeHandle pipeHandle[], CHAR *pipeName[], UINT32 pipeCount, 
     }
 
     if ((pipeHandle[0] == EN_ERROR) || (pipeHandle[1] == EN_ERROR)) {
-        (VOID)mmClose(pipeHandle[0]);
-        (VOID)mmClose(pipeHandle[1]);
+        (VOID) mmClose(pipeHandle[0]);
+        (VOID) mmClose(pipeHandle[1]);
         return EN_ERROR;
     } else {
         return EN_OK;
@@ -825,8 +815,8 @@ VOID mmClosePipe(mmPipeHandle pipeHandle[], UINT32 pipeCount)
     if ((pipeCount != MMPA_PIPE_COUNT) || (pipeHandle == NULL)) {
         return;
     }
-    (VOID)mmClose(pipeHandle[0]);
-    (VOID)mmClose(pipeHandle[1]);
+    (VOID) mmClose(pipeHandle[0]);
+    (VOID) mmClose(pipeHandle[1]);
     return;
 }
 
@@ -890,8 +880,8 @@ static INT32 LocalGetData(mmPollfd fd, pmmPollData polledData)
  */
 static INT32 CheckPollParam(const mmPollfd *fds, INT32 fdCount, const pmmPollData polledData, mmPollBack pollBack)
 {
-    if ((fds == NULL) || (fdCount == MMPA_ZERO) || (fdCount > FDSIZE) ||
-        (polledData == NULL) || (polledData->buf == NULL) || (pollBack == NULL)) {
+    if ((fds == NULL) || (fdCount == MMPA_ZERO) || (fdCount > FDSIZE) || (polledData == NULL) ||
+        (polledData->buf == NULL) || (pollBack == NULL)) {
         return EN_INVALID_PARAM;
     }
     return EN_OK;
@@ -906,8 +896,8 @@ static INT32 CheckPollParam(const mmPollfd *fds, INT32 fdCount, const pmmPollDat
  *       polledData -- 若读取到会填充进缓存，回调出来，缓存大小由用户分配
  * 返回值:超时返回EN_ERR, 读取成功返回EN_OK, 失败返回EN_ERROR, 入参错误返回EN_INVALID_PARAM
  */
-INT32 mmPoll(mmPollfd *fds, INT32 fdCount, INT32 timeout,
-    mmCompletionHandle handleIOCP, pmmPollData polledData, mmPollBack pollBack)
+INT32 mmPoll(mmPollfd *fds, INT32 fdCount, INT32 timeout, mmCompletionHandle handleIOCP, pmmPollData polledData,
+             mmPollBack pollBack)
 {
     INT32 checkParamRet = CheckPollParam(fds, fdCount, polledData, pollBack);
     if (checkParamRet != EN_OK) {
@@ -916,7 +906,7 @@ INT32 mmPoll(mmPollfd *fds, INT32 fdCount, INT32 timeout,
     INT32 i;
     UINT16 pollRevent;
     struct pollfd polledFd[FDSIZE];
-    (VOID)memset_s(polledFd, sizeof(polledFd), 0, sizeof(polledFd)); /* unsafe_function_ignore: memset */
+    (VOID) memset_s(polledFd, sizeof(polledFd), 0, sizeof(polledFd)); /* unsafe_function_ignore: memset */
 
     for (i = 0; i < fdCount; i++) {
         polledFd[i].fd = fds[i].handle;
@@ -1020,7 +1010,7 @@ INT32 mmWaitPid(mmProcess pid, INT32 *status, INT32 options)
 
     INT32 ret = waitpid(pid, status, options);
     if (ret == EN_ERROR) {
-        return EN_ERROR;                 // 调用异常
+        return EN_ERROR; // 调用异常
     }
     if ((ret > MMPA_ZERO) && (ret == pid)) { // 返回了子进程ID
         if (status != NULL) {
@@ -1031,7 +1021,7 @@ INT32 mmWaitPid(mmProcess pid, INT32 *status, INT32 options)
                 *status = WTERMSIG(*status); // 信号中止退出码
             }
         }
-        return EN_ERR;                  // 进程结束
+        return EN_ERR; // 进程结束
     }
     return EN_OK; // 进程未结束
 }
@@ -1066,7 +1056,7 @@ INT32 mmGetDiskFreeSpace(const CHAR *path, mmDiskSize *diskSize)
 
     // 把文件系统信息读入 struct statvfs buf 中
     struct statvfs buf;
-    (VOID)memset_s(&buf, sizeof(buf), 0, sizeof(buf)); /* unsafe_function_ignore: memset */
+    (VOID) memset_s(&buf, sizeof(buf), 0, sizeof(buf)); /* unsafe_function_ignore: memset */
 
     INT32 ret = statvfs(path, &buf);
     if (ret == MMPA_ZERO) {
@@ -1084,7 +1074,7 @@ INT32 mmGetDiskFreeSpace(const CHAR *path, mmDiskSize *diskSize)
  *      name--由用户分配缓存, 缓存长度必须>=MMPA_MIN_OS_NAME_SIZE
  * 返回值:入参错误返回EN_INVALID_PARAM, 返回值:执行成功返回EN_OK, 执行失败返回EN_ERROR
  */
-INT32 mmGetOsName(CHAR* name, INT32 nameSize)
+INT32 mmGetOsName(CHAR *name, INT32 nameSize)
 {
     if ((name == NULL) || (nameSize < MMPA_MIN_OS_NAME_SIZE)) {
         return EN_INVALID_PARAM;
@@ -1103,22 +1093,21 @@ INT32 mmGetOsName(CHAR* name, INT32 nameSize)
  *      versionInfo--由用户分配缓存, 缓存长度必须>=MMPA_MIN_OS_VERSION_SIZE
  * 返回值:入参错误返回EN_INVALID_PARAM, 返回值:执行成功返回EN_OK, 执行失败返回EN_ERROR
  */
-INT32 mmGetOsVersion(CHAR* versionInfo, INT32 versionLength)
+INT32 mmGetOsVersion(CHAR *versionInfo, INT32 versionLength)
 {
     if ((versionInfo == NULL) || (versionLength < MMPA_MIN_OS_VERSION_SIZE)) {
         return EN_INVALID_PARAM;
     }
     INT32 ret = 0;
     struct utsname sysInfo;
-    (VOID)memset_s(&sysInfo, sizeof(sysInfo), 0, sizeof(sysInfo)); /* unsafe_function_ignore: memset */
+    (VOID) memset_s(&sysInfo, sizeof(sysInfo), 0, sizeof(sysInfo)); /* unsafe_function_ignore: memset */
     UINT32 length = (UINT32)versionLength;
     size_t len = (size_t)length;
     INT32 fb = uname(&sysInfo);
     if (fb < MMPA_ZERO) {
         return EN_ERROR;
     } else {
-        ret = snprintf_s(versionInfo, len, (len - 1U), "%s-%s-%s",
-            sysInfo.sysname, sysInfo.release, sysInfo.version);
+        ret = snprintf_s(versionInfo, len, (len - 1U), "%s-%s-%s", sysInfo.sysname, sysInfo.release, sysInfo.version);
         if (ret == EN_ERROR) {
             return EN_ERROR;
         }
@@ -1149,31 +1138,31 @@ INT32 mmGetMac(mmMacInfo **list, INT32 *count)
     ifc.ifc_len = (INT)sizeof(buf);
     INT32 ret = ioctl(sock, SIOCGIFCONF, &ifc);
     if (ret == EN_ERROR) {
-        (VOID)close(sock);
+        (VOID) close(sock);
         return EN_ERROR;
     }
 
     INT32 len = (INT32)sizeof(struct ifreq);
-    const struct ifreq* it = ifc.ifc_req;
+    const struct ifreq *it = ifc.ifc_req;
     *count = (ifc.ifc_len / len);
     UINT32 cnt = (UINT32)(*count);
     size_t needSize = (size_t)(cnt) * sizeof(mmMacInfo);
 
-    macInfo = (mmMacInfo*)malloc(needSize);
+    macInfo = (mmMacInfo *)malloc(needSize);
     if (macInfo == NULL) {
         *count = MMPA_ZERO;
-        (VOID)close(sock);
+        (VOID) close(sock);
         return EN_ERROR;
     }
 
-    (VOID)memset_s(macInfo, needSize, 0, needSize); /* unsafe_function_ignore: memset */
-    const struct ifreq* const end = it + *count;
+    (VOID) memset_s(macInfo, needSize, 0, needSize); /* unsafe_function_ignore: memset */
+    const struct ifreq *const end = it + *count;
     INT32 i = 0;
     for (; it != end; ++it) {
         ret = strcpy_s(ifr.ifr_name, sizeof(ifr.ifr_name), it->ifr_name);
         if (ret != EOK) {
             *count = MMPA_ZERO;
-            (VOID)close(sock);
+            (VOID) close(sock);
             free(macInfo);
             return EN_ERROR;
         }
@@ -1187,18 +1176,14 @@ INT32 mmGetMac(mmMacInfo **list, INT32 *count)
                 continue;
             }
             const UCHAR *ptr = (UCHAR *)&ifr.ifr_ifru.ifru_hwaddr.sa_data[0];
-            ret = snprintf_s(macInfo[i].addr,
-                sizeof(macInfo[i].addr), sizeof(macInfo[i].addr) - 1U,
-                "%02X-%02X-%02X-%02X-%02X-%02X",
-                *(ptr + MMPA_MAC_ADDR_FIRST_BYTE),
-                *(ptr + MMPA_MAC_ADDR_SECOND_BYTE),
-                *(ptr + MMPA_MAC_ADDR_THIRD_BYTE),
-                *(ptr + MMPA_MAC_ADDR_FOURTH_BYTE),
-                *(ptr + MMPA_MAC_ADDR_FIFTH_BYTE),
-                *(ptr + MMPA_MAC_ADDR_SIXTH_BYTE));
+            ret = snprintf_s(macInfo[i].addr, sizeof(macInfo[i].addr), sizeof(macInfo[i].addr) - 1U,
+                             "%02X-%02X-%02X-%02X-%02X-%02X", *(ptr + MMPA_MAC_ADDR_FIRST_BYTE),
+                             *(ptr + MMPA_MAC_ADDR_SECOND_BYTE), *(ptr + MMPA_MAC_ADDR_THIRD_BYTE),
+                             *(ptr + MMPA_MAC_ADDR_FOURTH_BYTE), *(ptr + MMPA_MAC_ADDR_FIFTH_BYTE),
+                             *(ptr + MMPA_MAC_ADDR_SIXTH_BYTE));
             if (ret == EN_ERROR) {
                 *count = MMPA_ZERO;
-                (VOID)close(sock);
+                (VOID) close(sock);
                 free(macInfo);
                 return EN_ERROR;
             }
@@ -1207,7 +1192,7 @@ INT32 mmGetMac(mmMacInfo **list, INT32 *count)
             *count = *count - 1;
         }
     }
-    (VOID)close(sock);
+    (VOID) close(sock);
     if (*count <= 0) {
         free(macInfo);
         return EN_ERROR;
@@ -1248,7 +1233,8 @@ static INT32 LocalLookup(CHAR *buf, UINT32 bufLen, const CHAR *pattern, CHAR *va
     size_t len = strlen(pattern); //lint !e712
 
     // 空白字符过滤
-    for (pBuf = buf; isspace(*pBuf) != 0; pBuf++) {}
+    for (pBuf = buf; isspace(*pBuf) != 0; pBuf++) {
+    }
 
     // 关键字匹配
     INT32 ret = strncmp(pBuf, pattern, len);
@@ -1256,18 +1242,21 @@ static INT32 LocalLookup(CHAR *buf, UINT32 bufLen, const CHAR *pattern, CHAR *va
         return EN_ERROR;
     }
     // :之前空白字符过滤
-    for (pBuf = pBuf + len; isspace(*pBuf) != 0; pBuf++) {}
+    for (pBuf = pBuf + len; isspace(*pBuf) != 0; pBuf++) {
+    }
 
     if (*pBuf == '\0') {
         return EN_ERROR;
     }
 
     // :之后空白字符过滤
-    for (pBuf = pBuf + 1; isspace(*pBuf) != 0; pBuf++) {}
+    for (pBuf = pBuf + 1; isspace(*pBuf) != 0; pBuf++) {
+    }
 
     pValue = pBuf;
     // 截取所需信息
-    for (pBuf = buf + bufLen; isspace(*(pBuf - 1)) != 0; pBuf--) {}
+    for (pBuf = buf + bufLen; isspace(*(pBuf - 1)) != 0; pBuf--) {
+    }
 
     *pBuf = '\0';
 
@@ -1286,19 +1275,14 @@ static INT32 LocalLookup(CHAR *buf, UINT32 bufLen, const CHAR *pattern, CHAR *va
  *      partLen--指针长度
  * 返回值:无
  */
-static const CHAR* LocalGetArmVersion(CHAR *cpuImplememter, CHAR *cpuPart)
+static const CHAR *LocalGetArmVersion(CHAR *cpuImplememter, CHAR *cpuPart)
 {
     static struct CpuTypeTable g_paramatersTable[] = {
-        { "0x410xd03", "ARMv8_Cortex_A53"},
-        { "0x410xd05", "ARMv8_Cortex_A55"},
-        { "0x410xd07", "ARMv8_Cortex_A57"},
-        { "0x410xd08", "ARMv8_Cortex_A72"},
-        { "0x410xd09", "ARMv8_Cortex_A73"},
-        { "0x480xd01", "TaishanV110"}
-    };
+        {"0x410xd03", "ARMv8_Cortex_A53"}, {"0x410xd05", "ARMv8_Cortex_A55"}, {"0x410xd07", "ARMv8_Cortex_A57"},
+        {"0x410xd08", "ARMv8_Cortex_A72"}, {"0x410xd09", "ARMv8_Cortex_A73"}, {"0x480xd01", "TaishanV110"}};
     CHAR cpuArmVersion[MMPA_CPUINFO_DOUBLE_SIZE] = {0};
-    INT32 ret = snprintf_s(cpuArmVersion, sizeof(cpuArmVersion), sizeof(cpuArmVersion) - 1U,
-                           "%s%s", cpuImplememter, cpuPart);
+    INT32 ret = snprintf_s(cpuArmVersion, sizeof(cpuArmVersion), sizeof(cpuArmVersion) - 1U, "%s%s", cpuImplememter,
+                           cpuPart);
     if (ret == EN_ERROR) {
         return NULL;
     }
@@ -1326,26 +1310,16 @@ static VOID LocalGetArmManufacturer(CHAR *cpuImplememter, mmCpuDesc *cpuInfo)
     }
     INT32 ret = EN_ERROR;
     static struct CpuTypeTable g_manufacturerTable[] = {
-        { "0x41", "ARM"},
-        { "0x42", "Broadcom"},
-        { "0x43", "Cavium"},
-        { "0x44", "DigitalEquipment"},
-        { "0x48", "HiSilicon"},
-        { "0x49", "Infineon"},
-        { "0x4D", "Freescale"},
-        { "0x4E", "NVIDIA"},
-        { "0x50", "APM"},
-        { "0x51", "Qualcomm"},
-        { "0x56", "Marvell"},
-        { "0x69", "Intel"}
-    };
+        {"0x41", "ARM"},       {"0x42", "Broadcom"}, {"0x43", "Cavium"},    {"0x44", "DigitalEquipment"},
+        {"0x48", "HiSilicon"}, {"0x49", "Infineon"}, {"0x4D", "Freescale"}, {"0x4E", "NVIDIA"},
+        {"0x50", "APM"},       {"0x51", "Qualcomm"}, {"0x56", "Marvell"},   {"0x69", "Intel"}};
 
     INT32 i = 0;
     for (i = (INT32)(sizeof(g_manufacturerTable) / sizeof(g_manufacturerTable[0])) - 1; i >= 0; --i) {
         ret = strcasecmp(cpuImplememter, g_manufacturerTable[i].key);
         if (ret == 0) {
-            (VOID)memcpy_s(cpuInfo->manufacturer, sizeof(cpuInfo->manufacturer),
-                g_manufacturerTable[i].value, (strlen(g_manufacturerTable[i].value) + 1U));
+            (VOID) memcpy_s(cpuInfo->manufacturer, sizeof(cpuInfo->manufacturer), g_manufacturerTable[i].value,
+                            (strlen(g_manufacturerTable[i].value) + 1U));
             return;
         }
     }
@@ -1382,23 +1356,23 @@ static VOID LocalGetDeduplicateCnt(INT32 *physicalIds, INT32 size, INT32 id, INT
  */
 static VOID LocalGetCpuProc(mmCpuDesc *cpuInfo, INT32 *physicalCount)
 {
-    CHAR buf[MMPA_CPUPROC_BUF_SIZE]                 = {0};
-    CHAR physicalID[MMPA_CPUINFO_DEFAULT_SIZE]      = {0};
-    CHAR cpuMhz[MMPA_CPUINFO_DEFAULT_SIZE]          = {0};
-    CHAR cpuCores[MMPA_CPUINFO_DEFAULT_SIZE]        = {0};
-    CHAR cpuCnt[MMPA_CPUINFO_DEFAULT_SIZE]          = {0};
-    CHAR cpuImplememter[MMPA_CPUINFO_DEFAULT_SIZE]  = {0};
-    CHAR cpuPart[MMPA_CPUINFO_DEFAULT_SIZE]         = {0};
-    CHAR cpuThreads[MMPA_CPUINFO_DEFAULT_SIZE]      = {0};
-    CHAR maxSpeed[MMPA_CPUINFO_DEFAULT_SIZE]        = {0};
+    CHAR buf[MMPA_CPUPROC_BUF_SIZE] = {0};
+    CHAR physicalID[MMPA_CPUINFO_DEFAULT_SIZE] = {0};
+    CHAR cpuMhz[MMPA_CPUINFO_DEFAULT_SIZE] = {0};
+    CHAR cpuCores[MMPA_CPUINFO_DEFAULT_SIZE] = {0};
+    CHAR cpuCnt[MMPA_CPUINFO_DEFAULT_SIZE] = {0};
+    CHAR cpuImplememter[MMPA_CPUINFO_DEFAULT_SIZE] = {0};
+    CHAR cpuPart[MMPA_CPUINFO_DEFAULT_SIZE] = {0};
+    CHAR cpuThreads[MMPA_CPUINFO_DEFAULT_SIZE] = {0};
+    CHAR maxSpeed[MMPA_CPUINFO_DEFAULT_SIZE] = {0};
     INT32 physicalIdCnt = 0U;
-    INT32* physicalIds = (INT32*)malloc(MMPA_MAX_PHYSICALCPU_COUNT * sizeof(INT32));
+    INT32 *physicalIds = (INT32 *)malloc(MMPA_MAX_PHYSICALCPU_COUNT * sizeof(INT32));
     if (physicalIds == NULL) {
         return;
     }
     FILE *fp = fopen("/proc/cpuinfo", "r");
     if (fp == NULL) {
-        (VOID)free(physicalIds);
+        (VOID) free(physicalIds);
         return;
     }
     UINT32 length = 0U;
@@ -1439,8 +1413,8 @@ static VOID LocalGetCpuProc(mmCpuDesc *cpuInfo, INT32 *physicalCount)
             ;
         }
     }
-    (VOID)free(physicalIds);
-    (VOID)fclose(fp);
+    (VOID) free(physicalIds);
+    (VOID) fclose(fp);
     fp = NULL;
     cpuInfo->frequency = atoi(cpuMhz);
     cpuInfo->ncores = atoi(cpuCores);
@@ -1450,9 +1424,9 @@ static VOID LocalGetCpuProc(mmCpuDesc *cpuInfo, INT32 *physicalCount)
     }
     cpuInfo->nthreads = atoi(cpuThreads);
     cpuInfo->maxFrequency = atoi(maxSpeed);
-    const CHAR* tmp = LocalGetArmVersion(cpuImplememter, cpuPart);
+    const CHAR *tmp = LocalGetArmVersion(cpuImplememter, cpuPart);
     if (tmp != NULL) {
-        (VOID)memcpy_s(cpuInfo->version, sizeof(cpuInfo->version), tmp, strlen(tmp) + 1U);
+        (VOID) memcpy_s(cpuInfo->version, sizeof(cpuInfo->version), tmp, strlen(tmp) + 1U);
     }
     LocalGetArmManufacturer(cpuImplememter, cpuInfo);
     return;
@@ -1487,12 +1461,12 @@ INT32 mmGetCpuInfo(mmCpuDesc **cpuInfo, INT32 *count)
     }
     UINT32 needSize = (UINT32)(physicalCount) * (UINT32)(sizeof(mmCpuDesc));
 
-    pCpuDesc = (mmCpuDesc*)malloc(needSize);
+    pCpuDesc = (mmCpuDesc *)malloc(needSize);
     if (pCpuDesc == NULL) {
         return EN_ERROR;
     }
 
-    (VOID)memset_s(pCpuDesc, needSize, 0, needSize); /* unsafe_function_ignore: memset */
+    (VOID) memset_s(pCpuDesc, needSize, 0, needSize); /* unsafe_function_ignore: memset */
 
     if (uname(&sysInfo) == EN_OK) {
         ret = memcpy_s(cpuDest.arch, sizeof(cpuDest.arch), sysInfo.machine, strlen(sysInfo.machine) + 1U);
@@ -1543,4 +1517,3 @@ mmSize mmGetPageSize(VOID)
 }
 #endif /* __cpluscplus */
 #endif /* __cpluscplus */
-

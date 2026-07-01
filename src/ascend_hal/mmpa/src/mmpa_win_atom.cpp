@@ -124,4 +124,3 @@ mmAtomicType64 mmValueSub64(mmAtomicType64 *ptr, mmAtomicType64 value)
 }
 #endif /* __cpluscplus */
 #endif /* __cpluscplus */
-
